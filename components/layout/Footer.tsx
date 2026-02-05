@@ -167,7 +167,7 @@ export default function Footer() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-gray-900 border border-gray-800 p-8 rounded-2xl w-full max-w-sm shadow-2xl relative"
+              className="bg-gray-900 border border-gray-800 py-8 px-6 md:px-8 rounded-2xl w-full max-w-sm shadow-2xl relative"
             >
               <button 
                 onClick={() => setIsAdminModalOpen(false)}

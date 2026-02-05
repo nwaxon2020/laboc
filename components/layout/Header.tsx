@@ -61,7 +61,7 @@ export default function Header() {
     const isAdmin = user?.uid === adminUID;
 
     return (
-        <header className="sticky top-0 z-50 bg-white shadow-md">
+        <header className="sticky top-0 z-[300] bg-white shadow-md">
             <div className="container mx-auto p-3">
                 <div className="flex items-center justify-between">
                     

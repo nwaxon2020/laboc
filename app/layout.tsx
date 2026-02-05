@@ -7,6 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import NewsSection from '@/components/NewsSection';
+import Chat from "@/components/ChatBox";
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -24,13 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} min-h-screen flex flex-col`}>
+        <Toaster position="top-center" reverseOrder={false} />
         <Header />
         <main className="flex-grow">
           {children}
         </main>
         <NewsSection/>
         <Footer />
-        <Toaster position="top-center" reverseOrder={false} />
+        <Chat />
       </body>
     </html>
   )
