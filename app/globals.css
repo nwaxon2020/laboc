@@ -20,7 +20,65 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Custom Smart Scrollbar for Laboc Funeral Services */
+
+/* 1. The Scrollbar Width */
+::-webkit-scrollbar {
+  width: 8px; /* Vertical scrollbar width */
+  height: 8px; /* Horizontal scrollbar height */
+}
+
+/* 2. The Track (The background area) */
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5); /* Deep slate to match your bg-slate-950 */
+  backdrop-filter: blur(10px);
+}
+
+/* 3. The Thumb (The draggable part) */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #3b82f6, #1d4ed8); /* Your Blue-600 to Blue-700 */
+  border-radius: 20px;
+  border: 2px solid rgba(15, 23, 42, 0.8); /* Creates a 'floating' gap effect */
+  transition: all 0.3s ease;
+}
+
+/* 4. Hover Effect */
+::-webkit-scrollbar-thumb:hover {
+  background: #60a5fa; /* Lighter blue on hover */
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Subtle glow */
+}
+
+/* 5. Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 rgba(15, 23, 42, 0.5);
+}
+
+/* 6. Special Styling for the Admin Inbox Scrollbar 
+   (Targeting the .custom-scrollbar class we used in the modal) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+  background-clip: content-box;
 }
