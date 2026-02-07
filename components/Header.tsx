@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { auth } from "@/lib/firebaseConfig"
 import { onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"
@@ -10,16 +11,44 @@ import toast from "react-hot-toast"
 import Nav from './Nav'
 
 export default function Header() {
+    const pathname = usePathname();
     const [user, setUser] = useState<User | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     
     // --- SETTINGS ---
     const adminUID = process.env.NEXT_PUBLIC_ADMIN_KEY;
-    // Set your CEO image URL here, or leave as null to use placeholder
     const ceoImage = null; 
     const placeholderImage = "https://ui-avatars.com/api/?name=Admin&background=111827&color=fff";
-    // ----------------
+
+    // UPDATED: Background & Text Color Logic based on URL
+    const getHeaderStyles = () => {
+        
+        if (pathname === '/blog') {
+            return {
+                container: 'bg-gray-950 text-white border-b border-gray-800',
+                text: 'text-white',
+                subText: 'text-gray-400',
+                line: 'bg-gray-700'
+            };
+        }
+        if (pathname === '/about') {
+            return {
+                container: 'bg-blue-900 text-white shadow-xl', // Dark Blue (Slate-900)
+                text: 'text-white',
+                subText: 'text-slate-300',
+                line: 'bg-slate-700'
+            };
+        }
+        return {
+            container: 'bg-white shadow-md text-gray-900',
+            text: 'text-gray-900',
+            subText: 'text-gray-500',
+            line: 'bg-gray-300'
+        };
+    }
+
+    const styles = getHeaderStyles();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -61,28 +90,29 @@ export default function Header() {
     const isAdmin = user?.uid === adminUID;
 
     return (
-        <header className="sticky top-0 z-[300] bg-white shadow-md">
+        <header className={`sticky top-0 z-[300] transition-all duration-500 ${styles.container}`}>
             <div className="container mx-auto p-3">
                 <div className="flex items-center justify-between">
                     
                     {/* Logo & Brand */}
                     <Link href="/" className="flex items-center space-x-2">
-                        <div className="p-1 w-10 h-10 md:w-14 md:h-14 shadow-lg border-2 border-gray-800 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div className="p-1 w-10 h-10 md:w-14 md:h-14 shadow-lg border-2 border-gray-800 rounded-lg flex items-center justify-center overflow-hidden bg-white">
                             <img src="/logo.png" className='w-full h-full object-cover' alt="Site Logo" />
                         </div>
                         <div className="flex flex-col items-start font-sans">
-                            <h1 className="text-[12px] md:text-[18px] font-black text-gray-900 tracking-tight leading-none">
-                                Laboc <span className="font-medium text-gray-700">Funeral Services</span>
+                            <h1 className={`text-[12px] md:text-[18px] font-black tracking-tight leading-none ${styles.text}`}>
+                                Laboc <span className={`font-medium opacity-80`}>Funeral Services</span>
                             </h1>
-                            <div className="w-full h-[1px] bg-gray-300 my-1" />
-                            <p className="text-[7px] md:text-[9px] font-bold text-gray-500 tracking-[0.2em] uppercase flex justify-between w-full px-0.5">
+                            <div className={`w-full h-[1px] my-1 ${styles.line}`} />
+                            <p className={`text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase flex justify-between w-full px-0.5 ${styles.subText}`}>
                                 <span>Compassionate care</span>
-                                <span className="text-gray-300">|</span>
+                                <span className="opacity-30">|</span>
                                 <span>Since 2011</span>
                             </p>
                         </div>
                     </Link>
 
+                    {/* Navigation Component - Ensure Nav.tsx uses inherit colors or props */}
                     <Nav />
 
                     {/* Actions Area */}
@@ -96,19 +126,16 @@ export default function Header() {
 
                         {user ? (
                             <div className="relative flex items-center gap-2" ref={dropdownRef}>
-                                
-                                {/* CEO / USER NAME */}
                                 {isAdmin ? (
-                                    <span className="hidden sm:block text-[11px] font-black uppercase tracking-tighter bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 bg-clip-text text-transparent animate-shimmer">
+                                    <span className="hidden sm:block text-[11px] font-black uppercase tracking-tighter bg-gradient-to-r from-amber-300 via-yellow-100 to-amber-400 bg-clip-text text-transparent animate-shimmer">
                                         CEO
                                     </span>
                                 ) : (
-                                    <span className="hidden sm:block text-[10px] font-bold text-gray-500 uppercase tracking-tighter">
+                                    <span className={`hidden sm:block text-[10px] font-bold uppercase tracking-tighter ${styles.subText}`}>
                                         {user.displayName?.split(' ')[0]}
                                     </span>
                                 )}
 
-                                {/* Avatar Trigger */}
                                 <button 
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     className="focus:outline-none relative group"
@@ -122,25 +149,24 @@ export default function Header() {
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full text-[8px] border border-gray-200 p-0.5">
+                                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full text-[8px] border border-gray-200 p-0.5 text-gray-900">
                                         <FaChevronDown className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                                     </div>
                                 </button>
 
-                                {/* Dropdown Card */}
                                 <AnimatePresence>
                                     {isDropdownOpen && (
                                         <motion.div 
                                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute right-0 top-full mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-2xl p-4 overflow-hidden"
+                                            className="absolute right-0 top-full mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-2xl p-4 overflow-hidden text-gray-900"
                                         >
                                             <div className="mb-4">
                                                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
                                                     {isAdmin ? "Founder & CEO" : "Account"}
                                                 </p>
-                                                <p className="text-xs font-semibold text-gray-800 truncate">{user.email}</p>
+                                                <p className="text-xs font-semibold truncate">{user.email}</p>
                                             </div>
 
                                             <div className="flex flex-col gap-1">
@@ -168,7 +194,7 @@ export default function Header() {
                         ) : (
                             <button 
                                 onClick={handleLogin}
-                                className="text-xs md:text-sm font-bold text-gray-700 hover:text-blue-600 transition uppercase tracking-widest"
+                                className={`text-xs md:text-sm font-bold transition uppercase tracking-widest ${styles.text} hover:opacity-70`}
                             >
                                 Sign In
                             </button>
@@ -177,7 +203,6 @@ export default function Header() {
                 </div>
             </div>
 
-            {/* Injected Shiny Animation Styles */}
             <style jsx>{`
                 @keyframes shimmer {
                     0% { background-position: -200% center; }

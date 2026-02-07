@@ -1,52 +1,100 @@
-import Link from 'next/link'
+'use client'
 
-interface BlogPost {
-  id: number
-  title: string
-  excerpt: string
-  date: string
-  category: string
-  readTime: string
+import { useState, useRef, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { FaWhatsapp } from 'react-icons/fa' // Ensure this is imported
+
+interface BlogItem {
+  id: number;
+  title: string;
+  description: string;
+  content: string;
+  mediaUrl: string;
+  type: 'image' | 'video'; // Strict typing
+  price?: number;
 }
 
 interface BlogCardProps {
-  post: BlogPost
+  item: BlogItem;
+  onViewMore: () => void;
 }
 
-export default function BlogCard({ post }: BlogCardProps) {
+export default function BlogCard({ item, onViewMore }: BlogCardProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (videoRef.current) {
+          entry.isIntersecting ? videoRef.current.play() : videoRef.current.pause();
+        }
+      },
+      { threshold: 0.6 }
+    );
+
+    if (videoRef.current) observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <Link href={`/blog/${post.id}`}>
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer">
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <span className="bg-gray-100 text-gray-800 text-xs font-semibold px-3 py-1 rounded-full">
-              {post.category}
-            </span>
-            <span className="text-gray-500 text-sm">{post.readTime}</span>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="bg-gray-950 border border-gray-900 rounded md:rounded-xl overflow-hidden shadow-2xl group flex flex-col h-full"
+    >
+      {/* Media Section */}
+      <div className="relative h-64 overflow-hidden bg-black">
+        {item.type === 'video' ? (
+          <video
+            ref={videoRef}
+            src={item.mediaUrl}
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500"
+          />
+        ) : (
+          <img
+            src={item.mediaUrl}
+            alt={item.title}
+            className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
+          />
+        )}
+        
+        {item.price && (
+          <div className="absolute top-4 right-4 bg-amber-600 text-white px-4 py-1 rounded-full font-black text-xs shadow-lg z-10">
+            ₦{item.price.toLocaleString()}
           </div>
-          
-          <h3 className="text-xl font-semibold text-gray-800 mb-3 line-clamp-2">
-            {post.title}
-          </h3>
-          
-          <p className="text-gray-600 mb-4 line-clamp-3">
-            {post.excerpt}
-          </p>
-          
-          <div className="flex items-center justify-between">
-            <time className="text-gray-500 text-sm">
-              {new Date(post.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </time>
-            <span className="text-gray-800 font-medium hover:text-gray-600 transition">
-              Read more →
-            </span>
-          </div>
+        )}
+      </div>
+
+      {/* Content Section */}
+      <div className="p-6 flex flex-col flex-grow">
+        <h3 className="text-xl font-black text-white mb-3 tracking-tight">{item.title}</h3>
+        <p className="text-gray-400 text-sm line-clamp-3 mb-4 leading-relaxed">
+          {item.description}
+        </p>
+
+        <button 
+          onClick={onViewMore}
+          className="text-amber-500 text-xs font-black uppercase tracking-widest underline underline-offset-4 hover:text-amber-400 transition-colors w-fit mb-6"
+        >
+          View More
+        </button>
+
+        <div className="mt-auto">
+          <a
+            href={`https://wa.me/2347065870898?text=I am interested in ${item.title}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full bg-white text-black py-3 rounded-xl font-black text-sm hover:bg-green-600 hover:text-white transition-all duration-300 group/btn"
+          >
+            <FaWhatsapp size={20} className="text-green-600 group-hover/btn:text-white transition-colors" />
+            CONTACT US
+          </a>
         </div>
       </div>
-    </Link>
+    </motion.div>
   )
 }

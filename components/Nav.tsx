@@ -10,6 +10,12 @@ export default function Navigation() {
   const [isAboutOpen, setIsAboutOpen] = useState(false)
   const [isServicesOpen, setIsServicesOpen] = useState(false)
   
+  // TEXT ONLY LOGIC: Determine if text should be white based on the route
+  const shouldBeWhite = pathname === '/blog' || pathname === '/about';
+  const textColor = shouldBeWhite ? 'text-white' : 'text-gray-700';
+  const activeTextColor = shouldBeWhite ? 'text-white' : 'text-gray-900';
+  const activeBorder = shouldBeWhite ? 'border-white' : 'border-gray-800';
+
   const COMPANY_ADDRESS = "12 Surulere Street, Beside Old Fanmilk Depot, Makun, Sagamu, Ogun State";
   const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/${encodeURIComponent(COMPANY_ADDRESS)}`;
 
@@ -20,7 +26,6 @@ export default function Navigation() {
     setIsServicesOpen(false);
   };
 
-  // Logic to trigger the service detail view in the Services Component
   const handleServiceLinkClick = (title: string) => {
     const event = new CustomEvent("open-service-from-footer", { detail: title });
     window.dispatchEvent(event);
@@ -50,13 +55,17 @@ export default function Navigation() {
     { name: 'Our Policy', href: '/terms' },
   ]
 
+  // Helpers to check if a section is active
+  const isServicesActive = pathname === '/services';
+  const isAboutActive = aboutSubItems.some(sub => pathname === sub.href);
+
   return (
     <>
       {/* DESKTOP NAVIGATION */}
       <nav className="hidden md:flex items-center space-x-8">
         <Link
           href="/"
-          className={`${pathname === '/' ? 'text-gray-900 font-bold border-b-2 border-gray-800' : 'text-gray-700 hover:text-gray-900 font-medium'} transition duration-300`}
+          className={`${pathname === '/' ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80 font-medium`} transition duration-300`}
         >
           Home
         </Link>
@@ -66,7 +75,7 @@ export default function Navigation() {
           <button 
             onMouseEnter={() => setIsServicesOpen(true)}
             onMouseLeave={() => setIsServicesOpen(false)}
-            className={`flex items-center transition duration-300 font-medium py-2 ${pathname === '/services' ? 'text-gray-900 font-bold' : 'text-gray-700 hover:text-gray-900'}`}
+            className={`flex items-center transition duration-300 font-medium py-2 ${isServicesActive ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80`}`}
           >
             Services
             <svg className={`ml-1 w-4 h-4 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +105,7 @@ export default function Navigation() {
 
         <Link
           href="/blog"
-          className={`${pathname === '/blog' ? 'text-gray-900 font-bold border-b-2 border-gray-800' : 'text-gray-700 hover:text-gray-900 font-medium'} transition duration-300`}
+          className={`${pathname === '/blog' ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80 font-medium`} transition duration-300`}
         >
           Blog
         </Link>
@@ -106,7 +115,7 @@ export default function Navigation() {
           <button 
             onMouseEnter={() => setIsAboutOpen(true)}
             onMouseLeave={() => setIsAboutOpen(false)}
-            className={`flex items-center transition duration-300 font-medium py-2 ${aboutSubItems.some(sub => pathname === sub.href) ? 'text-gray-900 font-bold' : 'text-gray-700 hover:text-gray-900'}`}
+            className={`flex items-center transition duration-300 font-medium py-2 ${isAboutActive ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80`}`}
           >
             About
             <svg className={`ml-1 w-4 h-4 transition-transform ${isAboutOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,11 +137,11 @@ export default function Navigation() {
           </div>
         </div>
 
-        <button onClick={openChat} className="text-gray-700 hover:text-gray-900 transition duration-300 font-medium">Contact</button>
+        <button onClick={openChat} className={`${textColor} hover:opacity-80 transition duration-300 font-medium`}>Contact</button>
       </nav>
 
-      {/* MOBILE MENU BUTTON */}
-      <button className="md:hidden text-gray-700" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+      {/* MOBILE MENU BUTTON COLOR LOGIC */}
+      <button className={`md:hidden ${shouldBeWhite ? 'text-white' : 'text-gray-700'}`} onClick={() => setIsMenuOpen(!isMenuOpen)}>
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {isMenuOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
         </svg>
@@ -144,16 +153,15 @@ export default function Navigation() {
           <div className="container mx-auto px-6 py-6 flex flex-col space-y-4">
             <Link href="/" className={`${pathname === '/' ? 'text-gray-900 font-bold underline' : 'text-gray-700 font-medium'} text-lg border-b border-gray-50 pb-2`} onClick={() => setIsMenuOpen(false)}>Home</Link>
             
-            {/* MOBILE SERVICES DROPDOWN */}
             <div className="flex flex-col">
-              <button onClick={() => setIsServicesOpen(!isServicesOpen)} className={`flex justify-between items-center text-lg font-medium py-2 border-b border-gray-50 ${pathname === '/services' ? 'text-gray-900 font-bold' : 'text-gray-700'}`}>
+              <button onClick={() => setIsServicesOpen(!isServicesOpen)} className={`flex justify-between items-center text-lg font-medium py-2 border-b border-gray-50 ${isServicesActive ? 'text-gray-900 font-bold underline' : 'text-gray-700'}`}>
                 Services
                 <svg className={`w-5 h-5 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               {isServicesOpen && (
-                <div className="flex flex-col space-y-3 pl-4 mt-3 border-l-2 border-blue-100">
+                <div className="flex flex-col space-y-3 pl-4 mt-3 border-l-2 border-blue-100 text-gray-700">
                   <Link href="/services" onClick={() => setIsMenuOpen(false)} className="text-blue-600 font-bold text-sm">View All Services</Link>
                   {serviceSubItems.map((service) => (
                     <Link key={service} href="/services" onClick={() => handleServiceLinkClick(service)} className="text-gray-600 font-medium">{service}</Link>
@@ -164,9 +172,8 @@ export default function Navigation() {
 
             <Link href="/blog" className={`${pathname === '/blog' ? 'text-gray-900 font-bold underline' : 'text-gray-700 font-medium'} text-lg border-b border-gray-50 pb-2`} onClick={() => setIsMenuOpen(false)}>Blog</Link>
             
-            {/* MOBILE ABOUT DROPDOWN */}
             <div className="flex flex-col">
-              <button onClick={() => setIsAboutOpen(!isAboutOpen)} className={`flex justify-between items-center text-lg font-medium py-2 border-b border-gray-50 ${aboutSubItems.some(sub => pathname === sub.href) ? 'text-gray-900 font-bold' : 'text-gray-700'}`}>
+              <button onClick={() => setIsAboutOpen(!isAboutOpen)} className={`flex justify-between items-center text-lg font-medium py-2 border-b border-gray-50 ${isAboutActive ? 'text-gray-900 font-bold underline' : 'text-gray-700'}`}>
                 About
                 <svg className={`w-5 h-5 transition-transform ${isAboutOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
