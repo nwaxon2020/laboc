@@ -1,6 +1,6 @@
 import Card from '@/components/common/Card'
 
-export default function ServicesSection() {
+export default function ServicesPageUi() {
   const services = [
     {
       title: 'Traditional Funerals',

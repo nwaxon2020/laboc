@@ -83,7 +83,7 @@ export default function Footer() {
                 </p>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Providing compassionate and dignified funeral services for over 25 years in Sagamu and beyond.
+              Providing compassionate and dignified funeral services for over 15 years in Sagamu and beyond.
             </p>
           </div>
           

@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import NewsSection from '@/components/NewsSection';
-import Chat from "@/components/ChatBox";
+import Chat from "@/components/layout/ChatBox";
 
 const inter = Inter({ subsets: ['latin'] })
 

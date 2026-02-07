@@ -26,6 +26,17 @@ export default function FloatingChat() {
   const adminUID = process.env.NEXT_PUBLIC_ADMIN_KEY;
   const isAdmin = user?.uid === adminUID;
 
+  //Open chat listner
+  useEffect(() => {
+    const handleTrigger = () => {
+      setIsOpen(true);
+      if (!isAdmin) setMobileView('chat');
+    };
+
+    window.addEventListener("open-chat", handleTrigger);
+    return () => window.removeEventListener("open-chat", handleTrigger);
+  }, [isAdmin]);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
@@ -145,7 +156,7 @@ export default function FloatingChat() {
   };
 
   return (
-    <div className="fixed bottom-4 right-6 z-[200]">
+    <div className="fixed bottom-4 right-6 z-[500]">
       <button onClick={() => setIsOpen(!isOpen)} className="group relative flex items-center justify-center w-16 h-16 bg-blue-600 text-white rounded-full shadow-[0_10px_40px_rgba(37,99,235,0.4)]">
         {isOpen ? <FaTimes size={24} /> : <FaCommentDots size={26} />}
         {!isOpen && unreadTotal > 0 && (
@@ -154,12 +165,12 @@ export default function FloatingChat() {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-20 -right-4 md:right-0 w-[95vw] h-[550px] md:w-[400px] md:h-[450px] bg-slate-900 border border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row backdrop-blur-xl">
+        <div className="absolute bottom-20 -right-4 md:right-0 w-[95vw] h-[600px] md:w-[500px] md:h-[450px] bg-slate-900 border border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row backdrop-blur-xl">
           {!user ? (
             <div className="flex flex-col items-center justify-center w-full h-full p-10 text-center"><FaCommentDots className="text-blue-500 mb-6" size={40} /><button onClick={() => signInWithPopup(auth, new GoogleAuthProvider())} className="bg-white text-black px-8 py-4 rounded-2xl font-bold">Sign in with Google</button></div>
           ) : (
             <>
-              <div className={`${isAdmin ? 'md:w-64' : 'hidden'} ${isAdmin && mobileView === 'chat' ? 'hidden' : 'flex'} flex-col bg-slate-950/40 border-r border-slate-800/50`}>
+              <div className={`${isAdmin ? 'md:w-40' : 'hidden'} ${isAdmin && mobileView === 'chat' ? 'hidden' : 'flex'} flex-col bg-slate-950/40 border-r border-slate-800/50`}>
                 <div className="p-6 border-b border-slate-800/50"><h4 className="text-[10px] uppercase tracking-widest text-blue-400 font-black">Contacts</h4></div>
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
                   {isAdmin && (rooms.length === 0 ? (
