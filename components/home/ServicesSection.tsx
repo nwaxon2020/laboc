@@ -14,7 +14,7 @@ const services = [
       "https://f2m2news.com.ng/wp-content/uploads/2023/10/IMG-20231020-WA0018.jpg",
       "https://alexis.lindaikejisblog.com/photos/shares/ro_1686981503.jpg"
     ],
-    mobileHeight: "h-[300px]",
+    mobileHeight: "h-[250px]",
     changeInterval: 8500, // 5.5 seconds
     startDelay: 4000, // Starts rotating 4s after page load
   },
@@ -27,7 +27,7 @@ const services = [
       "/service3.jpeg",
       "/service4.jpeg"
     ],
-    mobileHeight: "h-[220px]",
+    mobileHeight: "h-[250px]",
     changeInterval: 10000, // 6 seconds
     startDelay: 2000, // Starts rotating 2s after page load
   },
@@ -111,7 +111,7 @@ export default function ServicesPageUi() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className={`group relative cursor-pointer overflow-hidden rounded-2xl md:rounded-[2.5rem] shadow-xl bg-slate-200 
+              className={`group relative cursor-pointer overflow-hidden rounded-lg md:rounded-[2.5rem] shadow-xl bg-slate-200 
                 ${index === 2 ? "col-span-2 md:col-span-1" : "col-span-1"} 
                 ${item.mobileHeight} md:h-[500px]`}
             >
