@@ -4,10 +4,10 @@ import './globals.css'
 
 import { Toaster } from 'react-hot-toast';
 
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import NewsSection from '@/components/NewsSection';
-import Chat from "@/components/layout/ChatBox";
+import Chat from "@/components/ChatBox";
 
 const inter = Inter({ subsets: ['latin'] })
 

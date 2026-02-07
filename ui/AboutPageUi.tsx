@@ -1,13 +1,44 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { FaHeart, FaShieldAlt, FaHandsHelping } from "react-icons/fa";
 
 export default function AboutPageUi() {
+  // Array of 3 background images
+  const heroImages = [
+    "https://ggsc.s3.us-west-2.amazonaws.com/assets/images/what_can_we_learn_from_the_worlds_most_peaceful_societies_-_abcdef_-_0a21b39134b316e51cdc0dd96c5e6bca3c0093e9_-_abcdef_-_c3aa4369bd53794b17dba2719890b56de8809755.webp", 
+    "https://www.quietkarma.org/wp-content/uploads/2018/12/world-peace-vs-inner-peace.jpg",
+    "https://thumbs.dreamstime.com/b/word-peace-written-white-letters-body-water-water-appears-to-be-calm-serene-sun-setting-401987715.jpg"
+  ];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="bg-white">
-      {/* Hero Section */}
+      {/* Hero Section with BG Logic */}
       <section className="relative py-20 bg-slate-900 text-white overflow-hidden">
+        {/* Background Layer */}
+        <div className="absolute inset-0 z-0">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={index}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.2 }} // Maintained your original 20% opacity
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${heroImages[index]})` }}
+            />
+          </AnimatePresence>
+        </div>
+
         <div className="container mx-auto px-6 text-center relative z-10">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -16,15 +47,14 @@ export default function AboutPageUi() {
           >
             A Legacy of <span className="text-blue-500 italic">Compassion</span>
           </motion.h1>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            Serving the Sagamu community with dignity, honor, and professional care for over a decade.
+          <p className="text-amber-300 max-w-2xl mx-auto text-lg">
+            Serving communities nationwide with dignity, honor, and professional care for over a decade.
           </p>
         </div>
-        <div className="absolute inset-0 opacity-20 bg-[url('/funeral-bg.jpg')] bg-cover bg-center" />
       </section>
 
       {/* CEO Section */}
-      <section className="py-20 container mx-auto px-4 md:px-6">
+      <section className="pt-2 pb-20 md:py-20 container mx-auto px-4 md:px-6">
         <div className="flex flex-col md:flex-row items-center gap-12">
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
@@ -33,12 +63,11 @@ export default function AboutPageUi() {
             className="w-full md:w-1/2"
           >
             <div className="relative group">
-              <div className="absolute -inset-4 bg-blue-600/10 rounded-lg md:rounded-2xl scale-95 group-hover:scale-100 transition-transform" />
-              {/* REPLACE '/ceo.jpg' with your actual CEO image path */}
+              <div className="absolute -inset-4 bg-blue-600/20 rounded-lg md:rounded-2xl scale-95 group-hover:scale-100 transition-transform" />
               <img 
                 src="/ceo1.png" 
                 alt="CEO Laboc Funeral Services" 
-                className="relative rounded-2xl shadow-2xl w-full h-[500px] object-cover"
+                className="relative rounded-2xl shadow-2xl w-full h-auto md:h-[500px] object-cover"
               />
             </div>
           </motion.div>
@@ -81,16 +110,12 @@ export default function AboutPageUi() {
 
       {/* About 2 */}
       <section id="about" className="py-24 relative overflow-hidden bg-gradient-to-b from-slate-50 to-white">
-        
-        {/* Decorative Background Watermark */}
         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 opacity-[0.03] pointer-events-none">
           <div className="w-[600px] h-[600px] rounded-full border-[40px] border-blue-600" />
         </div>
 
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="container mx-auto p-3 md:px-6 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            
-            {/* LEFT SIDE: TEXT CONTENT */}
             <div className="order-2 lg:order-1">
               <div className="inline-block px-4 py-1.5 mb-6 text-[10px] font-black uppercase tracking-[0.3em] bg-blue-100 text-blue-700 rounded-full">
                 Our Legacy
@@ -103,22 +128,12 @@ export default function AboutPageUi() {
               <div className="space-y-6 text-slate-600 text-sm md:text-base leading-relaxed">
                 <p>
                   For over 15 years, <span className="font-bold text-slate-800">Laboc Funeral Services</span> has been a pillar of support for families Nationwide. 
-                  Our commitment to compassionate care has made us a trusted name in funeral services.
                 </p>
-
                 <p>
-                  Founded in 2011 by the Laboc family, we understand that every family is unique, and every life deserves to be
-                  celebrated in a meaningful way. Our experienced team is dedicated to guiding you through every step of the process
-                  with empathy and professionalism.
-                </p>
-
-                <p>
-                  We believe in providing affordable, dignified funeral services that honor your loved one's memory while respecting
-                  your family's wishes and budget.
+                  Founded in 2011 by the Laboc family, we understand that every family is unique, and every life deserves to be celebrated.
                 </p>
               </div>
               
-              {/* Stats Grid */}
               <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-4">
                 {[
                   { label: "Years of Service", value: "15+" },
@@ -134,48 +149,24 @@ export default function AboutPageUi() {
               </div>
             </div>
             
-            {/* RIGHT SIDE: 4-IMAGE GRID HOLDER */}
             <div className="relative order-1 lg:order-2">
-              {/* The Main Large Rounded Container */}
               <div className="relative z-10 bg-blue-600/20 p-3 md:p-6 rounded-[1rem] shadow-2xl border border-slate-100">
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
-                  
-                  {/* Image 1: Top Left */}
                   <div className="rounded-[1rem] overflow-hidden h-40 md:h-60 shadow-inner bg-slate-100">
-                    <img src="/service6.jpeg" alt="Caskets" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                    <img src="/service6.jpeg" alt="Caskets" className="w-full h-full object-cover" />
                   </div>
-
-                  {/* Image 2: Top Right */}
                   <div className="rounded-[1rem] overflow-hidden h-40 md:h-60 shadow-inner bg-slate-100 mt-4 md:mt-8">
-                    <img src="/service5.jpeg" alt="Horse Carriage" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                    <img src="/service5.jpeg" alt="Horse Carriage" className="w-full h-full object-cover" />
                   </div>
-
-                  {/* Image 3: Bottom Left */}
                   <div className="rounded-[1rem] overflow-hidden h-40 md:h-60 shadow-inner bg-slate-100 -mt-4 md:-mt-8">
-                    <img src="/service2.jpeg" alt="Modern Hearse" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
+                    <img src="/service2.jpeg" alt="Modern Hearse" className="w-full h-full object-cover" />
                   </div>
-
-                  {/* Image 4: Bottom Right */}
                   <div className="rounded-[1rem] overflow-hidden h-40 md:h-60 shadow-inner bg-slate-100">
-                    <img src="/service3.jpeg" alt="Laboc Logo" className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" />
-                  </div>
-
-                </div>
-
-                {/* Centered Floating Badge */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-xl border-4 border-white z-20">
-                  <div className="text-center">
-                    <div className="text-sm md:text-lg font-black leading-none">15</div>
-                    <div className="text-[8px] uppercase font-bold">Years</div>
+                    <img src="/service3.jpeg" alt="Laboc Logo" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
-
-              {/* Outer Accent Glows */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl" />
             </div>
-
           </div>
         </div>
       </section>
