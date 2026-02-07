@@ -66,11 +66,17 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div>
-            <div className="w-42 md:w-58 flex flex-col items-start font-sans mb-2">
-                {/* Main Brand Name */}
-                <h1 className="text-sm md:text-[18px] font-black text-white tracking-tight leading-none">
-                    Laboc <span className="font-medium text-gray-400">Funeral Services</span>
-                </h1>
+            <div className="w-50 md:w-[16rem] flex flex-col items-start font-sans mb-2">
+                {/* Main Brand Name & logo */}
+                <div className='flex gap-2 justify-start items-end'>
+                  <div className="p-0.5 w-10 h-10 md:w-14 md:h-14 shadow-lg border-2 border-gray-800 rounded flex items-center justify-center overflow-hidden">
+                    <img src="/logo.png" className='w-full h-full object-cover' alt="Site Logo" />
+                  </div>
+
+                  <h1 className="text-sm md:text-[18px] font-black text-white tracking-tight leading-none">
+                      Laboc <span className="font-medium text-gray-400">Funeral Services</span>
+                  </h1>
+                </div>
 
                 {/* Decorative Separator Line */}
                 <div className="w-full h-[1px] bg-gray-300 my-1" />
