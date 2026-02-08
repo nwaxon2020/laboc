@@ -9,9 +9,10 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isAboutOpen, setIsAboutOpen] = useState(false)
   const [isServicesOpen, setIsServicesOpen] = useState(false)
+  const [isBlogOpen, setIsBlogOpen] = useState(false)
   
   // TEXT ONLY LOGIC: Determine if text should be white based on the route
-  const shouldBeWhite = pathname === '/blog' || pathname === '/about';
+  const shouldBeWhite = pathname === '/blog' || pathname === '/events'|| pathname === '/about';
   const textColor = shouldBeWhite ? 'text-white' : 'text-gray-700';
   const activeTextColor = shouldBeWhite ? 'text-white' : 'text-gray-900';
   const activeBorder = shouldBeWhite ? 'border-white' : 'border-gray-800';
@@ -24,6 +25,7 @@ export default function Navigation() {
     setIsMenuOpen(false);
     setIsAboutOpen(false);
     setIsServicesOpen(false);
+    setIsBlogOpen(false)
   };
 
   const handleServiceLinkClick = (title: string) => {
@@ -33,10 +35,6 @@ export default function Navigation() {
     setIsServicesOpen(false);
   };
 
-  const navItems = [
-    { name: 'Home', href: '/' },
-    { name: 'Blog', href: '/blog' },
-  ]
 
   const serviceSubItems = [
     'Traditional Funerals',
@@ -49,6 +47,11 @@ export default function Navigation() {
     'Floral & Venue Decor'
   ]
 
+  const blogSubItems =[
+    {name: "Market Place", href: "/blog"},
+    {name: "Events", href: "/events"},
+  ]
+
   const aboutSubItems = [
     { name: 'About Us', href: '/about' },
     { name: 'Our Location', href: GOOGLE_MAPS_URL, isExternal: true },
@@ -57,6 +60,7 @@ export default function Navigation() {
 
   // Helpers to check if a section is active
   const isServicesActive = pathname === '/services';
+  const isBlogActive = blogSubItems.some(sub => pathname === sub.href)
   const isAboutActive = aboutSubItems.some(sub => pathname === sub.href);
 
   return (
@@ -103,12 +107,29 @@ export default function Navigation() {
           </div>
         </div>
 
-        <Link
-          href="/blog"
-          className={`${pathname === '/blog' ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80 font-medium`} transition duration-300`}
-        >
-          Blog
-        </Link>
+         {/* BLOG DROPDOWN */}
+        <div className="relative group">
+          <button 
+            onMouseEnter={() => setIsBlogOpen(true)}
+            onMouseLeave={() => setIsBlogOpen(false)}
+            className={`flex items-center transition duration-300 font-medium py-2 ${isBlogActive ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80`}`}
+          >
+            Blog
+            <svg className={`ml-1 w-4 h-4 transition-transform ${isBlogOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div 
+            onMouseEnter={() => setIsBlogOpen(true)}
+            onMouseLeave={() => setIsBlogOpen(false)}
+            className={`absolute left-0 w-48 bg-white shadow-xl rounded-lg border border-gray-100 py-2 transition-all duration-300 z-[60] ${isBlogOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}
+          >
+            {blogSubItems.map((sub) => (
+              <Link key={sub.name} href={sub.href} className={`block px-4 py-2 text-sm ${pathname === sub.href ? 'text-gray-900 font-bold bg-gray-50' : 'text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium'}`}>{sub.name}</Link>
+            ))}
+
+          </div>
+        </div>
 
         {/* ABOUT DROPDOWN */}
         <div className="relative group">

@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 interface Service {
   title: string;
@@ -10,10 +11,12 @@ interface Service {
   icon: string;
 }
 
-export default function ServicesPageUi() {
+function ServicesContent() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const searchParams = useSearchParams();
 
-  const services: Service[] = [
+  // useMemo prevents the services array from being recreated on every render
+  const services: Service[] = useMemo(() => [
     {
       title: 'Traditional Funerals',
       description: 'Complete funeral services with visitation, ceremony, and burial or cremation options.',
@@ -70,36 +73,32 @@ export default function ServicesPageUi() {
       image: 'https://i.pinimg.com/736x/23/c7/b7/23c7b75840b4760f2afbaeac48fd6555.jpg',
       icon: '💐'
     },
-  ];
+  ], []);
 
-  // LOGIC: Listen for Footer Clicks
+  // INSTANT LOGIC: Open details card immediately on page mount
   useEffect(() => {
-    const handleFooterClick = (event: any) => {
-      const serviceTitle = event.detail;
-      const found = services.find(s => s.title === serviceTitle);
+    const serviceFromUrl = searchParams.get('service');
+    if (serviceFromUrl) {
+      const found = services.find(s => s.title === serviceFromUrl);
       if (found) {
         setSelectedService(found);
-        // Scroll to the detail div area
+        // Scroll instantly to the section to avoid freezing/flickering
         const section = document.getElementById("services");
         if (section) {
-          section.scrollIntoView({ behavior: 'smooth' });
+          section.scrollIntoView({ behavior: 'auto' });
         }
       }
-    };
-
-    window.addEventListener("open-service-from-footer", handleFooterClick);
-    return () => window.removeEventListener("open-service-from-footer", handleFooterClick);
-  }, [services]);
+    }
+  }, [searchParams, services]);
 
   const handleWhatsApp = () => {
-    window.open('https://wa.me/1234567890?text=Hello, I would like to inquire about your services.', '_blank');
+    window.open('https://wa.me/2347065870898?text=Hello, I would like to inquire about your services.', '_blank');
   };
 
   return (
-    <section id="services" className="py-20 bg-[#f8f9fa] transition-all duration-500">
+    <section id="services" className="py-20 bg-[#f8f9fa]">
       <div className="container mx-auto max-w-6xl">
         
-        {/* Navigation & Header Area */}
         <div className="px-4 flex flex-col md:flex-row justify-between items-center mb-16 text-center md:text-left gap-8">
           <div>
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4">
@@ -119,33 +118,41 @@ export default function ServicesPageUi() {
           </div>
         </div>
 
-        {/* Details Section */}
+        {/* Details Section (Mobile Friendly & Instant Open) */}
         {selectedService && (
-          <div className="mb-12 bg-black/90 md:rounded-2xl md:p-4 shadow-2xl border-y-2 md:border-2 border-amber-200 flex flex-col md:flex-row gap-8 animate-in fade-in zoom-in duration-300">
+          <div className="mb-12 bg-black/95 md:rounded-2xl shadow-2xl border-y-2 md:border-2 border-amber-200 flex flex-col md:flex-row gap-8 animate-in fade-in zoom-in duration-300"> 
             <div className="p-1 w-full md:w-1/3">
+              <div className='md:hidden p-6 flex justify-center md:justify-start items-end'>
+                <span className="text-3xl">{selectedService.icon}</span>
+                <h3 className="text-2xl md:text-3xl font-bold text-slate-200">{selectedService.title}</h3>
+              </div>
+
               <img 
                 src={selectedService.image} 
                 alt={selectedService.title} 
-                className="w-full h-74 object-cover rounded-2xl shadow-md"
+                className="w-full h-64 md:h-74 object-cover md:rounded-2xl"
               />
             </div>
-            <div className="p-4 w-full md:w-2/3 relative">
+            <div className="p-6 md:p-8 w-full md:w-2/3 relative">
               <button 
                 onClick={() => setSelectedService(null)}
-                className="absolute top-0 right-0 p-2 text-slate-400 hover:text-red-500 transition-colors"
-                aria-label="Close details"
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-red-500 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <span className="text-4xl mb-4 block">{selectedService.icon}</span>
-              <h3 className="text-2xl md:text-3xl font-bold text-slate-400 mb-4">{selectedService.title}</h3>
-              <p className="md:text-lg text-slate-100 leading-relaxed italic">
+
+              <div className='hidden md:flex gap-4 mb-4'>
+                <span className="text-3xl">{selectedService.icon}</span>
+                <h3 className="text-2xl md:text-3xl font-bold text-slate-200">{selectedService.title}</h3>
+              </div>
+              
+              <p className="md:text-lg text-slate-300 leading-relaxed italic">
                 {selectedService.longDescription}
               </p>
               <button 
-                onClick={() => window.open(`https://wa.me/1234567890?text=I am inquiring about ${selectedService.title}`, '_blank')}
+                onClick={() => window.open(`https://wa.me/2347065870898?text=I am inquiring about ${selectedService.title}`, '_blank')}
                 className="mt-6 text-amber-400 font-bold hover:underline flex items-center gap-2"
               >
                 Inquire about {selectedService.title} →
@@ -154,14 +161,14 @@ export default function ServicesPageUi() {
           </div>
         )}
 
-        {/* Services Grid */}
+        {/* MAP SERVICES */}
         <div className="px-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {services.map((service, index) => (
             <div 
               key={index}
               onClick={() => {
                 setSelectedService(service);
-                window.scrollTo({ top: 100, behavior: 'smooth' });
+                document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
               }}
               className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100 flex flex-col"
             >
@@ -171,9 +178,8 @@ export default function ServicesPageUi() {
                   alt={service.title} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
               </div>
-              <div className="p-3 md:p-4 pb-6">
+              <div className="p-4 pb-6">
                 <div className="text-3xl mb-2">{service.icon}</div>
                 <h3 className="text-xl font-bold text-slate-800 mb-2">
                   {service.title}
@@ -181,7 +187,7 @@ export default function ServicesPageUi() {
                 <p className="text-slate-600 mb-2 line-clamp-3">
                   {service.description}
                 </p>
-                <div className="text-amber-700 font-semibold group-hover:translate-x-2 transition-transform inline-flex items-center gap-2">
+                <div className="text-amber-700 font-semibold inline-flex items-center gap-2">
                   Learn More <span>→</span>
                 </div>
               </div>
@@ -190,5 +196,14 @@ export default function ServicesPageUi() {
         </div>
       </div>
     </section>
+  );
+}
+
+// MAIN UI EXPORT WITH SUSPENSE BOUNDARY
+export default function ServicesPageUi() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center text-slate-400">Loading Services...</div>}>
+      <ServicesContent />
+    </Suspense>
   );
 }

@@ -32,6 +32,14 @@ export default function Header() {
                 line: 'bg-gray-700'
             };
         }
+        if (pathname === '/events') {
+            return {
+                container: 'bg-emerald-950 text-white border-b border-emerald-800',
+                text: 'text-white',
+                subText: 'text-emerald-400',
+                line: 'bg-emerald-700'
+            };
+        }
         if (pathname === '/about') {
             return {
                 container: 'bg-blue-900 text-white shadow-xl', // Dark Blue (Slate-900)

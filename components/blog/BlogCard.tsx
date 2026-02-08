@@ -10,7 +10,7 @@ interface BlogItem {
   description: string;
   content: string;
   mediaUrl: string;
-  type: 'image' | 'video'; // Strict typing
+  type: 'image'
   price?: number;
 }
 
@@ -44,23 +44,12 @@ export default function BlogCard({ item, onViewMore }: BlogCardProps) {
       className="bg-gray-950 border border-gray-900 rounded md:rounded-xl overflow-hidden shadow-2xl group flex flex-col h-full"
     >
       {/* Media Section */}
-      <div className="relative h-64 overflow-hidden bg-black">
-        {item.type === 'video' ? (
-          <video
-            ref={videoRef}
-            src={item.mediaUrl}
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500"
-          />
-        ) : (
-          <img
-            src={item.mediaUrl}
-            alt={item.title}
-            className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
-          />
-        )}
+      <div className="relative h-64 overflow-hidden bg-black"> 
+        <img
+          src={item.mediaUrl}
+          alt={item.title}
+          className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
+        />
         
         {item.price && (
           <div className="absolute top-4 right-4 bg-amber-600 text-white px-4 py-1 rounded-full font-black text-xs shadow-lg z-10">
@@ -78,7 +67,7 @@ export default function BlogCard({ item, onViewMore }: BlogCardProps) {
 
         <button 
           onClick={onViewMore}
-          className="text-amber-500 text-xs font-black uppercase tracking-widest underline underline-offset-4 hover:text-amber-400 transition-colors w-fit mb-6"
+          className="cursor-pointer text-amber-500 text-xs font-black uppercase tracking-widest underline underline-offset-4 hover:text-amber-400 transition-colors w-fit mb-6"
         >
           View More
         </button>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // Added for smooth navigation
 import { auth } from "@/lib/firebaseConfig";
 import { 
   onAuthStateChanged, 
@@ -16,6 +17,7 @@ import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Footer() {
+  const router = useRouter(); // Initialize router
   const [user, setUser] = useState<User | null>(null);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
@@ -23,7 +25,7 @@ export default function Footer() {
   const [adminPassword, setAdminPassword] = useState("");
 
   const adminUID = process.env.NEXT_PUBLIC_ADMIN_KEY;
-  const COMPANY_ADDRESS = "123 Funeral Lane, City, State, Country";
+  const COMPANY_ADDRESS = "12 Surulere Street, Beside Old Fanmilk Depot, Makun, Sagamu, Ogun State, Nigeria";
   const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(COMPANY_ADDRESS)}`;
 
   useEffect(() => {
@@ -34,13 +36,9 @@ export default function Footer() {
   }, []);
 
   const handleServiceClick = (serviceTitle: string) => {
-    // Dispatch custom event to open the specific service card in the Services UI
-    const event = new CustomEvent("open-service-details", { detail: serviceTitle });
-    window.dispatchEvent(event);
-    
-    // Smooth scroll to the services section
-    const section = document.getElementById("services");
-    if (section) section.scrollIntoView({ behavior: "smooth" });
+    // FIXED: Using router.push instead of window.location.href to prevent flickering/freezing
+    // This performs a client-side navigation which is much faster and more stable
+    router.push(`/services?service=${encodeURIComponent(serviceTitle)}`);
   };
 
   const handleGoogleLogin = async () => {
@@ -74,7 +72,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gray-950 text-white border-t border-gray-900">
+    <footer className="bg-gray-950 text-white border-t border-gray-900 relative z-50">
       <div className="container mx-auto px-4 py-12 md:pt-32 md:pb-24">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
@@ -105,8 +103,9 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4 text-blue-500 uppercase tracking-widest text-xs">Navigation</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li><Link href="/" className="hover:text-white transition font-medium">Home</Link></li>
-              <li><Link href="#services" className="hover:text-white transition font-medium">Services</Link></li>
-              <li><Link href="/blog" className="hover:text-white transition font-medium">Blog</Link></li>
+              <li><Link href="/services" className="hover:text-white transition font-medium">Services</Link></li>
+              <li><Link href="/blog" className="hover:text-white transition font-medium">Market Place</Link></li>
+              <li><Link href="/events" className="hover:text-white transition font-medium">Events</Link></li>
               
               {/* About Dropdown in Footer */}
               <li className="relative">
@@ -146,7 +145,7 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4 text-blue-500 uppercase tracking-widest text-xs">Services</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
-              {['Traditional Funerals', 'Cremation Services', 'Pre-Planning', 'Grief Support', 'Diplomatic Convoy'].map((item) => (
+              {['Traditional Funerals', 'Cremation Services', 'Pre-Planning', 'Grief Support', 'Transportation', 'Memorial Products', 'Diplomatic Convoy', 'Floral & Venue Decor'].map((item) => (
                 <li key={item}>
                   <button 
                     onClick={() => handleServiceClick(item)} 
@@ -191,15 +190,14 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-900 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-xs">
-          <p>&copy; {new Date().getFullYear()} Laboc Funeral Services. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Laboc Funeral Services. All rights reserved.</p>
           <address className="not-italic flex gap-4 max-w-[30rem]">
-            <span >12 Surulere Street, Beside Old Fanmilk Depot, Makun, Sagamu, Ogun State, Nigeria</span>
+            <span>12 Surulere Street, Beside Old Fanmilk Depot, Makun, Sagamu, Ogun State, Nigeria</span>
             <span>support@labocfuneral.com</span>
           </address>
         </div>
       </div>
 
-      {/* Admin Modal - Code maintained from original */}
       <AnimatePresence>
         {isAdminModalOpen && (
           <div className="fixed inset-0 z-[150] flex items-center justify-center p-2 md:p-4 backdrop-blur-md bg-black/60">

@@ -12,7 +12,7 @@ interface BlogItem {
   description: string;
   content: string;
   mediaUrl: string;
-  type: 'image' | 'video';
+  type: 'image';
   price?: number;
 }
 
@@ -22,9 +22,9 @@ const BLOG_POSTS: BlogItem[] = [
     title: "The Diplomatic Procession",
     description: "Experience the grandeur of our state-of-the-art diplomatic convoy services for elite farewells.",
     content: "Our diplomatic convoy features professional outriders, luxury hearses, and a coordinated motorcade designed to provide the highest level of respect. We ensure that the final journey is as prestigious as the life lived.",
-    type: 'video',
-    mediaUrl: '/video2.mp4',
-    price: 0,
+    type: 'image',
+    mediaUrl: 'https://heritagebrothers.com.au/wp-content/uploads/2023/01/Da-Vinci-Maple.png',
+    price: 250000,
   },
   {
     id: 2,
@@ -70,9 +70,9 @@ const BLOG_POSTS: BlogItem[] = [
     title: "The Diplomatic Procession",
     description: "Experience the grandeur of our state-of-the-art diplomatic convoy services for elite farewells.",
     content: "Our diplomatic convoy features professional outriders, luxury hearses, and a coordinated motorcade designed to provide the highest level of respect. We ensure that the final journey is as prestigious as the life lived.",
-    type: 'video',
-    mediaUrl: '/video1.mp4',
-    price: 0,
+    type: 'image',
+    mediaUrl: 'https://casketdepotvancouver.ca/cdn/shop/products/Dominion-casket-Large__1_2048x.png?v=1657567260',
+    price: 98600,
   },
   
   {
@@ -81,8 +81,8 @@ const BLOG_POSTS: BlogItem[] = [
     description: "Experience the grandeur of our state-of-the-art diplomatic convoy services for elite farewells.",
     content: "Our diplomatic convoy features professional outriders, luxury hearses, and a coordinated motorcade designed to provide the highest level of respect. We ensure that the final journey is as prestigious as the life lived.",
     type: 'image',
-    mediaUrl: '/service5.jpeg',
-    price: 0,
+    mediaUrl: 'https://image.made-in-china.com/2f0j00bswivkrhAucT/Coffin-Custom-Luxury-Wood-Export-Coffins.webp',
+    price: 400000000,
   },
   {
     id: 8,
@@ -100,10 +100,11 @@ const BLOG_POSTS: BlogItem[] = [
     content: "We have officially moved! Our new space is designed to provide a serene and comfortable environment for families to discuss arrangements with our counselors.",
     type: 'image',
     mediaUrl: 'https://tonymontefunerals.com.au/wp-content/uploads/2021/08/Calvary-Veneer-0001.jpeg',
+    price: 1350000,
   },
 ]
 
-export default function BlogPage() {
+export default function BlogPageUi() {
   const [selectedPost, setSelectedPost] = useState<BlogItem | null>(null)
   const [fullScreenImage, setFullScreenImage] = useState<string | null>(null)
 
@@ -111,15 +112,16 @@ export default function BlogPage() {
     <main className="bg-black min-h-screen py-18 px-4">
       <div className="container mx-auto max-w-7xl">
         <header className="mb-16 text-center">
-          <h1 className="text-3xl md:text-5xl font-black text-white mb-4 italic uppercase">
-            Labock <span className="text-amber-600">Journal</span>
+          <h1 className="text-2xl md:text-4xl font-black text-white my-4 italic uppercase">
+            Labock <span className="text-amber-600">Market Place</span>
           </h1>
           <p className="text-blue-400 font-medium tracking-widest uppercase text-xs">
             Updates, Tributes, & Premium Services
           </p>
         </header>
 
-        <div className="px-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* MAPPING BLOG HERE */}
+        <div className="cursor-pointer px-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {BLOG_POSTS.map((post) => (
             <div key={post.id} className="relative group">
               <BlogCard 
@@ -160,16 +162,12 @@ export default function BlogPage() {
 
               {/* Media Section - Increased to 60% width on desktop for "Big" feel */}
               <div className="w-full md:w-[60%] h-[350px] md:h-auto bg-black flex items-center justify-center">
-                {selectedPost.type === 'video' ? (
-                  <video src={selectedPost.mediaUrl} controls autoPlay className="w-full h-full object-contain" />
-                ) : (
-                  <img 
-                    src={selectedPost.mediaUrl} 
-                    alt={selectedPost.title} 
-                    className="w-full h-full object-contain cursor-zoom-in" 
-                    onClick={() => setFullScreenImage(selectedPost.mediaUrl)}
-                  />
-                )}
+                <img 
+                  src={selectedPost.mediaUrl} 
+                  alt={selectedPost.title} 
+                  className="w-full h-full object-contain cursor-zoom-in" 
+                  onClick={() => setFullScreenImage(selectedPost.mediaUrl)}
+                />
               </div>
 
               {/* Content Section */}
