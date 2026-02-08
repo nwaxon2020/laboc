@@ -1,11 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState, useRef, useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
 
-export default function Navigation() {
+function NavContent() {
   const pathname = usePathname()
+  const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isAboutOpen, setIsAboutOpen] = useState(false)
   const [isServicesOpen, setIsServicesOpen] = useState(false)
@@ -28,13 +29,14 @@ export default function Navigation() {
     setIsBlogOpen(false)
   };
 
-  const handleServiceLinkClick = (title: string) => {
-    const event = new CustomEvent("open-service-from-footer", { detail: title });
-    window.dispatchEvent(event);
+  const handleServiceLinkClick = (e: React.MouseEvent, title: string) => {
+    e.preventDefault();
     setIsMenuOpen(false);
     setIsServicesOpen(false);
+    
+    // Using router.push for smooth SPA transition (Same as Footer fix)
+    router.push(`/services?service=${encodeURIComponent(title)}`);
   };
-
 
   const serviceSubItems = [
     'Traditional Funerals',
@@ -58,7 +60,6 @@ export default function Navigation() {
     { name: 'Our Policy', href: '/terms' },
   ]
 
-  // Helpers to check if a section is active
   const isServicesActive = pathname === '/services';
   const isBlogActive = blogSubItems.some(sub => pathname === sub.href)
   const isAboutActive = aboutSubItems.some(sub => pathname === sub.href);
@@ -97,8 +98,8 @@ export default function Navigation() {
             {serviceSubItems.map((service) => (
               <Link
                 key={service}
-                href="/services"
-                onClick={() => handleServiceLinkClick(service)}
+                href={`/services?service=${encodeURIComponent(service)}`}
+                onClick={(e) => handleServiceLinkClick(e, service)}
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium"
               >
                 {service}
@@ -127,7 +128,6 @@ export default function Navigation() {
             {blogSubItems.map((sub) => (
               <Link key={sub.name} href={sub.href} className={`block px-4 py-2 text-sm ${pathname === sub.href ? 'text-gray-900 font-bold bg-gray-50' : 'text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium'}`}>{sub.name}</Link>
             ))}
-
           </div>
         </div>
 
@@ -161,16 +161,16 @@ export default function Navigation() {
         <button onClick={openChat} className={`${textColor} hover:opacity-80 transition duration-300 font-medium`}>Contact</button>
       </nav>
 
-      {/* MOBILE MENU BUTTON COLOR LOGIC */}
+      {/* MOBILE MENU BUTTON */}
       <button className={`md:hidden ${shouldBeWhite ? 'text-white' : 'text-gray-700'}`} onClick={() => setIsMenuOpen(!isMenuOpen)}>
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {isMenuOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
         </svg>
       </button>
 
-      {/* MOBILE MENU */}
+      {/* MOBILE MENU - FIXED OVERFLOW AND SCROLL ISSUE */}
       {isMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white shadow-lg md:hidden z-50 animate-in slide-in-from-top duration-300 h-screen overflow-y-auto pb-24">
+        <div className="absolute top-full left-0 right-0 bg-white shadow-lg md:hidden z-50 animate-in slide-in-from-top duration-300 h-screen overflow-y-auto overflow-x-hidden max-w-full pb-24">
           <div className="container mx-auto px-6 py-6 flex flex-col space-y-4">
             <Link href="/" className={`${pathname === '/' ? 'text-gray-900 font-bold underline' : 'text-gray-700 font-medium'} text-lg border-b border-gray-50 pb-2`} onClick={() => setIsMenuOpen(false)}>Home</Link>
             
@@ -185,7 +185,7 @@ export default function Navigation() {
                 <div className="flex flex-col space-y-3 pl-4 mt-3 border-l-2 border-blue-100 text-gray-700">
                   <Link href="/services" onClick={() => setIsMenuOpen(false)} className="text-blue-600 font-bold text-sm">View All Services</Link>
                   {serviceSubItems.map((service) => (
-                    <Link key={service} href="/services" onClick={() => handleServiceLinkClick(service)} className="text-gray-600 font-medium">{service}</Link>
+                    <Link key={service} href={`/services?service=${encodeURIComponent(service)}`} onClick={(e) => handleServiceLinkClick(e, service)} className="text-gray-600 font-medium">{service}</Link>
                   ))}
                 </div>
               )}
@@ -215,5 +215,13 @@ export default function Navigation() {
         </div>
       )}
     </>
+  )
+}
+
+export default function Navigation() {
+  return (
+    <Suspense fallback={<div className="h-16" />}>
+      <NavContent />
+    </Suspense>
   )
 }
