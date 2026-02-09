@@ -55,7 +55,6 @@ export default function FloatingChat() {
       return onSnapshot(q, (snap) => {
         const roomData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         setRooms(roomData);
-        // FIX: Count only the number of rooms that have unread messages
         const unreadRooms = roomData.filter((r: any) => (r.unreadCountAdmin || 0) > 0).length;
         setUnreadTotal(unreadRooms);
       });
@@ -105,12 +104,8 @@ export default function FloatingChat() {
         const msgSnap = await getDocs(messagesRef);
         
         const batch = writeBatch(db);
-
-        // 1. Delete all messages found
         msgSnap.docs.forEach((d) => batch.delete(d.ref));
         
-        // 2. FIX: Use set with merge instead of update 
-        // This prevents the "No document to update" error
         const roomRef = doc(db, "chats", currentRoom);
         batch.set(roomRef, { 
           lastMessage: "Conversation cleared", 
@@ -136,7 +131,6 @@ export default function FloatingChat() {
     setInput("");
     const roomRef = doc(db, "chats", activeRoomId);
 
-    // Get current room unread count to increment correctly
     const currentRoom = rooms.find(r => r.id === activeRoomId);
     const currentUnread = isAdmin ? (currentRoom?.unreadCountUser || 0) : (currentRoom?.unreadCountAdmin || 0);
 
@@ -165,12 +159,13 @@ export default function FloatingChat() {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-20 -right-4 md:right-0 w-[95vw] h-[600px] md:w-[500px] md:h-[450px] bg-slate-900 border border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row backdrop-blur-xl">
+        <div className="absolute bottom-20 -right-4 md:right-0 w-[95vw] h-[600px] md:w-[600px] md:h-[450px] bg-slate-900 border border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row backdrop-blur-xl">
           {!user ? (
             <div className="flex flex-col items-center justify-center w-full h-full p-10 text-center"><FaCommentDots className="text-blue-500 mb-6" size={40} /><button onClick={() => signInWithPopup(auth, new GoogleAuthProvider())} className="bg-white text-black px-8 py-4 rounded-2xl font-bold">Sign in with Google</button></div>
           ) : (
             <>
-              <div className={`${isAdmin ? 'md:w-40' : 'hidden'} ${isAdmin && mobileView === 'chat' ? 'hidden' : 'flex'} flex-col bg-slate-950/40 border-r border-slate-800/50`}>
+              {/* SIDEBAR: Always show on desktop for admin, handle mobile toggle */}
+              <div className={`${isAdmin ? 'md:w-44' : 'hidden'} ${isAdmin && mobileView === 'chat' ? 'hidden md:flex' : 'flex'} flex-col bg-slate-950/40 border-r border-slate-800/50`}>
                 <div className="p-6 border-b border-slate-800/50"><h4 className="text-[10px] uppercase tracking-widest text-blue-400 font-black">Contacts</h4></div>
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
                   {isAdmin && (rooms.length === 0 ? (
@@ -186,7 +181,6 @@ export default function FloatingChat() {
                           <p className="text-white text-xs font-bold truncate">{room.userName}</p>
                           <p className="text-slate-500 text-[10px] truncate">{room.lastMessage}</p>
                         </div>
-                        {/* Always visible delete button for Admin */}
                         <button 
                           onClick={(e) => { e.stopPropagation(); setConfirmData({type: 'delete', id: room.id}); }} 
                           className="p-2 text-slate-500 hover:text-red-500 transition-colors"
@@ -205,7 +199,8 @@ export default function FloatingChat() {
                       {isAdmin && <button onClick={() => setMobileView('list')} className="md:hidden text-slate-400"><FaChevronLeft /></button>}
                       <p className="text-white font-bold text-sm">{isAdmin ? "Admin View" : "Support Team"}</p>
                     </div>
-                    {!isAdmin && messages.length > 0 && <button onClick={() => setConfirmData({type: 'clear'})} className="text-slate-500 hover:text-red-400 text-xs flex items-center gap-2"><FaTrashAlt size={10} /> Clear Chat</button>}
+                    {/* Logic: Both users and admin can clear chat if messages exist */}
+                    {activeRoomId && messages.length > 0 && <button onClick={() => setConfirmData({type: 'clear'})} className="text-slate-500 hover:text-red-400 text-xs flex items-center gap-2"><FaTrashAlt size={10} /> Clear Chat</button>}
                  </div>
 
                  <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar relative">
@@ -223,10 +218,12 @@ export default function FloatingChat() {
                     )}
                  </div>
 
-                 <form onSubmit={sendMessage} className="p-4 bg-slate-950/50 border-t border-slate-800 flex gap-2">
-                    <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message..." className="flex-1 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
-                    <button type="submit" className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-500 active:scale-90"><FaPaperPlane size={14} /></button>
-                 </form>
+                 {activeRoomId && (
+                   <form onSubmit={sendMessage} className="p-4 bg-slate-950/50 border-t border-slate-800 flex gap-2">
+                      <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message..." className="flex-1 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+                      <button type="submit" className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-500 active:scale-90"><FaPaperPlane size={14} /></button>
+                   </form>
+                 )}
               </div>
 
               {confirmData && (
