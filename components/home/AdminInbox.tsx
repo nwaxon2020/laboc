@@ -153,7 +153,7 @@ export default function AdminInbox({ isOpen, onClose }: { isOpen: boolean, onClo
             {confirmDelete && (
               <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setConfirmDelete(null)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative bg-slate-900 border border-slate-800 p-8 rounded-3xl max-sm w-full text-center shadow-2xl">
+                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="max-w-lg relative bg-slate-900 border border-slate-800 p-8 rounded-3xl max-sm w-full text-center shadow-2xl">
                   <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
                     <FaExclamationTriangle size={30} />
                   </div>

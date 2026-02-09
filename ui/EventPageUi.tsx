@@ -181,7 +181,7 @@ export default function EventPageUi() {
                     </p>
 
                     <a
-                    href={`https://wa.me/2347065870898?text=Hello Labock, I am inquiring about: ${selectedPost.title}`}
+                    href={`https://wa.me/2347065870898?text=Hello Labock, I am inquiring about your services, cause I saw your  *${selectedPost.title}* activity`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-green-700 text-white p-4 md:px-8 md:py-5 rounded-lg md:rounded-2xl font-black uppercase tracking-widest text-center flex items-center justify-center gap-4 hover:bg-green-600 transition-all shadow-xl shadow-green-900/20"

@@ -183,7 +183,7 @@ export default function BlogPageUi() {
                 </p>
 
                 <a
-                  href={`https://wa.me/2341234567890?text=Hello Labock, I am inquiring about: ${selectedPost.title}`}
+                  href={`https://wa.me/2347065870898?text=Hello Laboc, I am interested in your *${selectedPost.title}*`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-green-600 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest text-center flex items-center justify-center gap-4 hover:bg-green-700 transition-all shadow-lg shadow-green-900/20"

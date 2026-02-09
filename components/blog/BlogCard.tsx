@@ -74,7 +74,7 @@ export default function BlogCard({ item, onViewMore }: BlogCardProps) {
 
         <div className="mt-auto">
           <a
-            href={`https://wa.me/2347065870898?text=I am interested in ${item.title}`}
+            href={`https://wa.me/2347065870898?text=Hello Laboc, I am interested in your *${item.title}*`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 w-full bg-white text-black py-3 rounded-xl font-black text-sm hover:bg-green-600 hover:text-white transition-all duration-300 group/btn"
