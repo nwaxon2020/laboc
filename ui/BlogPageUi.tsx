@@ -113,7 +113,7 @@ export default function BlogPageUi() {
       <div className="container mx-auto max-w-7xl">
         <header className="mb-16 text-center">
           <h1 className="text-2xl md:text-4xl font-black text-white my-4 italic uppercase">
-            Labock <span className="text-amber-600">Market Place</span>
+            Laboc <span className="text-amber-600">Market Place</span>
           </h1>
           <p className="text-blue-400 font-medium tracking-widest uppercase text-xs">
             Updates, Tributes, & Premium Services

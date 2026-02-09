@@ -85,6 +85,9 @@ export default function AboutPageUi() {
             </p>
             <div className="border-l-4 border-blue-600 pl-6 italic text-slate-500">
               <p className="font-bold text-slate-900 not-italic">Hon. [CEO Name]</p>
+              <div className="flex flex-col">
+                <a href="tel:07065870898" className="text-xs hover:font-semibold tracking-widest">+2347065870898</a> 
+                <a href="mailto:@labocfuneralservices@gmail.com" className="text-xs text-blue-600 hover:text-blue-800 hover:font-semibold tracking-widest">labocfuneralservices@gmail.com</a></div>
               <p>Founder & Managing Director</p>
             </div>
           </motion.div>

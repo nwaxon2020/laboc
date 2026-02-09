@@ -66,12 +66,19 @@ export default function TermsAndConditionsUi() {
 
             <hr className="my-12 border-slate-200" />
 
+            <div className='p-5 text-center mx-auto flex flex-col max-w-60 h-auto'>
+              <p className='font-bold text-gray-500'>Proof of Registration</p>
+              <img src="/reg.jpeg" alt="Registration Image" className='border-5 border-gray-700 rounded w-full h-full'/>
+            </div>
+
+            <hr className="my-12 border-slate-200" />
+
             <div className="bg-amber-50 p-8 rounded-2xl border border-amber-100">
               <h3 className="text-xl font-bold text-amber-900 mb-2">Questions regarding our policy?</h3>
               <p className="text-amber-800 mb-4">
                 Our team is available 24/7 to clarify any of these terms for you.
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row gap-4 text-center">
                 <Link href="/contact" className="bg-amber-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-amber-800 transition-colors">
                   Contact Support
                 </Link>

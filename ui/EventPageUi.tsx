@@ -114,7 +114,7 @@ export default function EventPageUi() {
         <div className="container mx-auto max-w-7xl relative z-10">
             <header className="mb-16 text-center">
             <h1 className="text-2xl md:text-4xl font-black text-white my-4 italic uppercase tracking-tighter">
-                Labock <span className="text-amber-600">Events</span>
+                Laboc <span className="text-amber-600">Events</span>
             </h1>
             <p className="text-emerald-500/60 font-medium tracking-[0.2em] md:tracking-[0.3em] uppercase text-[10px] md:text-xs">
                 Updates, Tributes, & Premium Services
