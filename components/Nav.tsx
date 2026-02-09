@@ -222,7 +222,7 @@ function NavContent() {
 
 export default function Navigation() {
   return (
-    <Suspense fallback={<div className="h-16" />}>
+    <Suspense fallback={<div className="h-15" />}>
       <NavContent />
     </Suspense>
   )
