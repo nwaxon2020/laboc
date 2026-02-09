@@ -82,6 +82,7 @@ export default function AboutPageUi() {
             <h2 className="text-3xl md:text-5xl font-serif font-bold text-slate-900 mb-6">A Message From Our CEO</h2>
             <p className="text-slate-600 leading-relaxed mb-6">
               "At Laboc, we believe every life has a story that deserves to be told with honor. Our mission isn't just about services; it's about supporting families during their most difficult moments with a shoulder they can lean on."
+            <br /><a href="#about2" className="underline text-xs text-blue-600 hover:text-blue-400 font-semibold undeline">About Our Company?</a>
             </p>
             <div className="border-l-4 border-blue-600 pl-6 italic text-slate-500">
               <p className="font-bold text-slate-900 not-italic">Hon. [CEO Name]</p>
@@ -112,7 +113,8 @@ export default function AboutPageUi() {
       </section>
 
       {/* About 2 */}
-      <section id="about" className="py-24 relative overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      <span id="about2" className="absolute top-[2820px] md:top-[1400px] left-0"></span>
+      <section className="py-24 relative overflow-hidden bg-gradient-to-b from-slate-50 to-white">
         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 opacity-[0.03] pointer-events-none">
           <div className="w-[600px] h-[600px] rounded-full border-[40px] border-blue-600" />
         </div>
@@ -128,12 +130,19 @@ export default function AboutPageUi() {
                 <span className="text-blue-600 italic font-light">Funeral Services</span>
               </h2>
               
-              <div className="space-y-6 text-slate-600 text-sm md:text-base leading-relaxed">
+              <div id={"about2"} className="space-y-6 text-slate-600 text-sm md:text-base leading-relaxed">
                 <p>
-                  For over 15 years, <span className="font-bold text-slate-800">Laboc Funeral Services</span> has been a pillar of support for families Nationwide. 
-                </p>
-                <p>
-                  Founded in 2011 by the Laboc family, we understand that every family is unique, and every life deserves to be celebrated.
+                  We believe in providing our services with clarity. Hence, we present a detailed breakdown of all 
+                  costs involved in our package, ensuring that families can make informed decisions that align with 
+                  their budget.
+                  Our team of experienced professionals is dedicated to providing exceptional service with 
+                  empathy and respect. We are available 24/7 to assist families and ensure that every detail meets 
+                  their needs.
+                  We recognize the importance of honouring the life of a loved one and would be honoured to 
+                  provide our services to you and your family during this time. I would be happy to discuss our 
+                  funeral package in more detail and answer any questions you may have.
+                  Thank you for considering us as your partner in this important process.
+                  Yours sincerely
                 </p>
               </div>
               
