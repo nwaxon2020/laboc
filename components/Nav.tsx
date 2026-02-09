@@ -191,7 +191,9 @@ function NavContent() {
               )}
             </div>
 
-            <Link href="/blog" className={`${pathname === '/blog' ? 'text-gray-900 font-bold underline' : 'text-gray-700 font-medium'} text-lg border-b border-gray-50 pb-2`} onClick={() => setIsMenuOpen(false)}>Blog</Link>
+            <Link href="/blog" className={`${pathname === '/blog' ? 'text-gray-900 font-bold underline' : 'text-gray-700 font-medium'} text-lg border-b border-gray-50 pb-2`} onClick={() => setIsMenuOpen(false)}>Market Place</Link>
+            
+            <Link href="/events" className={`${pathname === '/events' ? 'text-gray-900 font-bold underline' : 'text-gray-700 font-medium'} text-lg border-b border-gray-50 pb-2`} onClick={() => setIsMenuOpen(false)}>Events</Link>
             
             <div className="flex flex-col">
               <button onClick={() => setIsAboutOpen(!isAboutOpen)} className={`flex justify-between items-center text-lg font-medium py-2 border-b border-gray-50 ${isAboutActive ? 'text-gray-900 font-bold underline' : 'text-gray-700'}`}>
