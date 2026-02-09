@@ -65,20 +65,29 @@ export default function FloatingChat() {
     }
   }, [user, isAdmin]);
 
+  // LOGIC: Automatically mark as read if the chat is currently open/active
   useEffect(() => {
     if (!activeRoomId || !isOpen) return;
+    
+    // Clear bubble immediately when room becomes active
+    markAsRead(activeRoomId);
+
     const q = query(collection(db, "chats", activeRoomId, "messages"), orderBy("timestamp", "asc"), limit(50));
     return onSnapshot(q, (snap) => {
       setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      
+      // If a new message arrives while we are looking at this chat, clear the bubble again
+      if (isAdmin) markAsRead(activeRoomId);
+
       setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }), 100);
     });
-  }, [activeRoomId, isOpen]);
+  }, [activeRoomId, isOpen, isAdmin]);
 
   const markAsRead = async (roomId: string) => {
     try {
       const roomRef = doc(db, "chats", roomId);
       await updateDoc(roomRef, { [isAdmin ? "unreadCountAdmin" : "unreadCountUser"]: 0 });
-    } catch (e) { console.error(e); }
+    } catch (e) { /* silent catch to prevent console spam during rapid updates */ }
   };
 
   const handleAction = async () => {
@@ -134,13 +143,18 @@ export default function FloatingChat() {
     const currentRoom = rooms.find(r => r.id === activeRoomId);
     const currentUnread = isAdmin ? (currentRoom?.unreadCountUser || 0) : (currentRoom?.unreadCountAdmin || 0);
 
-    await setDoc(roomRef, {
+    const roomUpdate: any = {
       lastMessage: msg,
       lastTimestamp: serverTimestamp(),
       [isAdmin ? "unreadCountUser" : "unreadCountAdmin"]: currentUnread + 1,
-      userName: isAdmin ? "Support Team" : user.displayName,
-      userPhoto: user.photoURL,
-    }, { merge: true });
+    };
+
+    if (!isAdmin) {
+      roomUpdate.userName = user.displayName;
+      roomUpdate.userPhoto = user.photoURL;
+    }
+
+    await setDoc(roomRef, roomUpdate, { merge: true });
 
     await addDoc(collection(db, "chats", activeRoomId, "messages"), { 
       text: msg, 
@@ -164,7 +178,6 @@ export default function FloatingChat() {
             <div className="flex flex-col items-center justify-center w-full h-full p-10 text-center"><FaCommentDots className="text-blue-500 mb-6" size={40} /><button onClick={() => signInWithPopup(auth, new GoogleAuthProvider())} className="bg-white text-black px-8 py-4 rounded-2xl font-bold">Sign in with Google</button></div>
           ) : (
             <>
-              {/* SIDEBAR: Always show on desktop for admin, handle mobile toggle */}
               <div className={`${isAdmin ? 'md:w-44' : 'hidden'} ${isAdmin && mobileView === 'chat' ? 'hidden md:flex' : 'flex'} flex-col bg-slate-950/40 border-r border-slate-800/50`}>
                 <div className="p-6 border-b border-slate-800/50"><h4 className="text-[10px] uppercase tracking-widest text-blue-400 font-black">Contacts</h4></div>
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -176,7 +189,15 @@ export default function FloatingChat() {
                   ) : (
                     rooms.map(room => (
                       <div key={room.id} onClick={() => { setActiveRoomId(room.id); setMobileView('chat'); markAsRead(room.id); }} className={`relative w-full p-4 flex items-center gap-3 hover:bg-white/5 cursor-pointer ${activeRoomId === room.id ? 'bg-blue-600/10' : ''}`}>
-                        <img src={room.userPhoto} className="w-10 h-10 rounded-full" alt="" />
+                        <div className="relative">
+                          <img src={room.userPhoto} className="w-10 h-10 rounded-full" alt="" />
+                          {/* Red Bubble Logic for Sidebar Contacts */}
+                          {room.unreadCountAdmin > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-slate-900">
+                              {room.unreadCountAdmin}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex-1 text-left overflow-hidden">
                           <p className="text-white text-xs font-bold truncate">{room.userName}</p>
                           <p className="text-slate-500 text-[10px] truncate">{room.lastMessage}</p>
@@ -199,7 +220,6 @@ export default function FloatingChat() {
                       {isAdmin && <button onClick={() => setMobileView('list')} className="md:hidden text-slate-400"><FaChevronLeft /></button>}
                       <p className="text-white font-bold text-sm">{isAdmin ? "Admin View" : "Support Team"}</p>
                     </div>
-                    {/* Logic: Both users and admin can clear chat if messages exist */}
                     {activeRoomId && messages.length > 0 && <button onClick={() => setConfirmData({type: 'clear'})} className="text-slate-500 hover:text-red-400 text-xs flex items-center gap-2"><FaTrashAlt size={10} /> Clear Chat</button>}
                  </div>
 
