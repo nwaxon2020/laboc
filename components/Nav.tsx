@@ -212,7 +212,7 @@ function NavContent() {
             </div>
 
             <button onClick={openChat} className="text-left text-gray-700 py-2 text-lg font-medium">Contact</button>
-            <Link href="/contact" className="bg-slate-900 text-white px-4 py-3 rounded-xl text-center font-bold shadow-lg" onClick={() => setIsMenuOpen(false)}>24/7 Emergency Line</Link>
+            <a href="tel:07065870898" className="bg-slate-900 text-white px-4 py-3 rounded-xl text-center font-bold shadow-lg" onClick={() => setIsMenuOpen(false)}>24/7 Emergency Line</a>
           </div>
         </div>
       )}
