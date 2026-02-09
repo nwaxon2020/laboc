@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import PriceList from '@/components/services/PriceList';
+import { motion, AnimatePresence } from 'framer-motion'; // Added for toggle animation
+import { FaChevronDown, FaTag } from 'react-icons/fa'; // Added for UI icons
 
 interface Service {
   title: string;
@@ -13,9 +16,9 @@ interface Service {
 
 function ServicesContent() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [isPriceListOpen, setIsPriceListOpen] = useState(true); // Toggle state
   const searchParams = useSearchParams();
 
-  // useMemo prevents the services array from being recreated on every render
   const services: Service[] = useMemo(() => [
     {
       title: 'Traditional Funerals',
@@ -75,14 +78,12 @@ function ServicesContent() {
     },
   ], []);
 
-  // INSTANT LOGIC: Open details card immediately on page mount
   useEffect(() => {
     const serviceFromUrl = searchParams.get('service');
     if (serviceFromUrl) {
       const found = services.find(s => s.title === serviceFromUrl);
       if (found) {
         setSelectedService(found);
-        // Scroll instantly to the section to avoid freezing/flickering
         const section = document.getElementById("services");
         if (section) {
           section.scrollIntoView({ behavior: 'auto' });
@@ -105,7 +106,7 @@ function ServicesContent() {
               Our <span className="border-b-4 border-amber-600">Services</span>
             </h2>
             <p className="text-slate-600 max-w-lg">
-              At Labock Funeral Services, we honor every life with a commitment to dignity, tradition, and compassion.
+              At Labock Funeral Services, we believe every farewell should be dignified, not expensive. Our transparent pricing ensures you can honor your loved one with grace.
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-4">
@@ -124,7 +125,7 @@ function ServicesContent() {
             <div className="p-1 w-full md:w-1/3">
               <div className='md:hidden p-6 flex justify-center md:justify-start items-end'>
                 <span className="text-3xl">{selectedService.icon}</span>
-                <h3 className="text-2xl md:text-3xl font-bold text-slate-200">{selectedService.title}</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-slate-200 ml-2">{selectedService.title}</h3>
               </div>
 
               <img 
@@ -143,7 +144,7 @@ function ServicesContent() {
                 </svg>
               </button>
 
-              <div className='hidden md:flex gap-4 mb-4'>
+              <div className='hidden md:flex gap-4 mb-4 items-center'>
                 <span className="text-3xl">{selectedService.icon}</span>
                 <h3 className="text-2xl md:text-3xl font-bold text-slate-200">{selectedService.title}</h3>
               </div>
@@ -161,7 +162,46 @@ function ServicesContent() {
           </div>
         )}
 
-        {/* MAP SERVICES */}
+        {/* --- DYNAMIC PRICE LIST TOGGLE --- */}
+        <div className="mb-16 border border-slate-100 rounded-2xl overflow-hidden">
+          <button 
+            onClick={() => setIsPriceListOpen(!isPriceListOpen)}
+            className="w-full bg-white p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-center justify-between gap-4 group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+                <FaTag />
+              </div>
+              <div className="text-left">
+                <h3 className="text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors">
+                  View Detailed Service Quotations
+                </h3>
+                <p className="text-slate-500 text-sm">Click to explore our transparent pricing for hearses, decor, and more.</p>
+              </div>
+            </div>
+            <div className={`p-2 rounded-full bg-slate-100 text-slate-400 transition-transform duration-300 ${isPriceListOpen ? 'rotate-180' : ''}`}>
+              <FaChevronDown />
+            </div>
+          </button>
+
+          <AnimatePresence>
+            {isPriceListOpen && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div id={"price-list"} className="-mt-5 border-t border-slate-100">
+                  <PriceList />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        {/* --- END PRICE LIST TOGGLE --- */}
+        
         <div className="px-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {services.map((service, index) => (
             <div 
@@ -199,7 +239,6 @@ function ServicesContent() {
   );
 }
 
-// MAIN UI EXPORT WITH SUSPENSE BOUNDARY
 export default function ServicesPageUi() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center text-slate-400">Loading Services...</div>}>
