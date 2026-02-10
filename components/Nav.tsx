@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 // Added React Icons for the update
 import { FaHome, FaServicestack, FaStore, FaCalendarAlt, FaInfoCircle, FaPhoneAlt, FaFileInvoiceDollar } from 'react-icons/fa';
 

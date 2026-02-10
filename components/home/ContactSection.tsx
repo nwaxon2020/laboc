@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaClock } from 'react-icons/fa'
 import { db } from "@/lib/firebaseConfig"; 
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 
 interface ContactSectionProps {
@@ -13,6 +13,7 @@ interface ContactSectionProps {
 }
 
 export default function ContactSection({ isOpen, onClose }: ContactSectionProps) {
+  // ✅ FORM STATE
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,6 +22,36 @@ export default function ContactSection({ isOpen, onClose }: ContactSectionProps)
     service: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // ✅ DYNAMIC CONTACT INFO STATE
+  const [businessInfo, setBusinessInfo] = useState({
+    mobile: '(070) 658-70898', // Default fallback
+    email: 'support@labocfuneral.com',
+    address: '12 Surulere Street, Sagamu',
+    office: ''
+  })
+
+  // ✅ FETCH DATA FROM ADMIN SETTINGS
+  useEffect(() => {
+    const fetchBusinessInfo = async () => {
+      try {
+        const docSnap = await getDoc(doc(db, "settings", "dashboard"));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setBusinessInfo({
+            mobile: data.mobile || businessInfo.mobile,
+            email: data.email || businessInfo.email,
+            address: data.address || businessInfo.address,
+            office: data.office || ''
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching contact info:", error);
+      }
+    };
+
+    if (isOpen) fetchBusinessInfo();
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -60,7 +91,6 @@ export default function ContactSection({ isOpen, onClose }: ContactSectionProps)
             exit={{ opacity: 0, scale: 0.9, y: 20 }} 
             className="relative w-full h-[100vh] md:h-auto max-w-4xl bg-slate-900/90 border border-slate-800 md:rounded-2xl overflow-y-auto md:overflow-hidden shadow-2xl flex flex-col-reverse lg:flex-row"
           >
-            {/* ✅ FIXED: Close Button at the very top with better visibility */}
             <div className="absolute top-[-395px] md:top-0 left-0 right-0 h-14 flex justify-end items-center px-4 pointer-events-none z-[110]">
               <button 
                 onClick={onClose} 
@@ -70,30 +100,43 @@ export default function ContactSection({ isOpen, onClose }: ContactSectionProps)
               </button>
             </div>
 
-            {/* INFO SECTION (Bottom on mobile) */}
+            {/* INFO SECTION - NOW DYNAMIC */}
             <div className="lg:w-1/3 bg-blue-600 p-8 py-12 md:p-10 text-white">
               <h3 className="text-2xl md:text-3xl font-serif font-bold mb-8">Contact Info</h3>
               <div className="space-y-8">
                 <div className="flex items-start gap-4">
                   <FaMapMarkerAlt className="mt-1 text-blue-200" />
-                  <div><h4 className="font-bold">Location</h4><p className="text-blue-100 text-sm">12 Surulere Street, Sagamu</p></div>
+                  <div>
+                    <h4 className="font-bold">Location</h4>
+                    <p className="text-blue-100 text-sm">{businessInfo.address}</p>
+                  </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <FaPhoneAlt className="mt-1 text-blue-200" />
-                  <div><h4 className="font-bold">Phone</h4><p className="text-blue-100 text-sm">(070) 658-70898</p></div>
+                  <div>
+                    <h4 className="font-bold">Phone</h4>
+                    <p className="text-blue-100 text-sm">{businessInfo.mobile}</p>
+                    {businessInfo.office && <p className="text-blue-100 text-xs mt-1">Office: {businessInfo.office}</p>}
+                  </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <FaEnvelope className="mt-1 text-blue-200" />
-                  <div><h4 className="font-bold">Email</h4><p className="text-blue-100 text-sm">support@labocfuneral.com</p></div>
+                  <div>
+                    <h4 className="font-bold">Email</h4>
+                    <p className="text-blue-100 text-sm">{businessInfo.email}</p>
+                  </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <FaClock className="mt-1 text-blue-200" />
-                  <div><h4 className="font-bold">Hours</h4><p className="text-blue-100 text-sm">Emergency: 24 Hours</p></div>
+                  <div>
+                    <h4 className="font-bold">Hours</h4>
+                    <p className="text-blue-100 text-sm">Emergency: 24 Hours</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* FORM SECTION (Top on mobile) */}
+            {/* FORM SECTION */}
             <div className="lg:w-2/3 p-6 md:p-12 bg-slate-900 py-28 md:py-8">
               <div className="max-w-md mx-auto">
                 <h3 className="text-2xl font-serif font-bold text-white mb-8 text-center">Consultation Request</h3>
