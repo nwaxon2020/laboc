@@ -169,7 +169,7 @@ export default function ServicePageEditorUi() {
 
                     <div className="space-y-8">
                         {data.pricing.map((cat: any, cIdx: number) => (
-                        <div key={cIdx} className="relative bg-slate-800/30 p-3 md:p-4 rounded-2xl border border-slate-700 overflow-hidden">
+                        <div key={cIdx} className="relative bg-slate-800/30 p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-700 overflow-hidden">
                             
                             {/* CATEGORY DELETE OVERLAY */}
                             {confirmDelete?.type === 'pricing' && confirmDelete.index === cIdx && (
