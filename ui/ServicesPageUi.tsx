@@ -137,7 +137,7 @@ function ServicesContent() {
             <div className="p-6 md:p-8 w-full md:w-2/3 relative">
               <button 
                 onClick={() => setSelectedService(null)}
-                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-red-500 transition-colors"
+                className="absolute -top-6 right-2 md:top-4 md:right-4 p-2 text-slate-400 hover:text-red-500 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -163,20 +163,20 @@ function ServicesContent() {
         )}
 
         {/* --- DYNAMIC PRICE LIST TOGGLE --- */}
-        <div className="mb-16 border border-slate-100 rounded-2xl overflow-hidden">
+        <div className="mb-16 border border-slate-100 md:rounded-2xl overflow-hidden">
           <button 
             onClick={() => setIsPriceListOpen(!isPriceListOpen)}
-            className="w-full bg-white p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-center justify-between gap-4 group"
+            className="w-full bg-white p-4 md:p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-center justify-between gap-4 group"
           >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
                 <FaTag />
               </div>
               <div className="text-left">
-                <h3 className="text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors">
+                <h3 className="md:text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors">
                   View Detailed Service Quotations
                 </h3>
-                <p className="text-slate-500 text-sm">Click to explore our transparent pricing for hearses, decor, and more.</p>
+                <p className="text-slate-500 text-xs md:text-sm">Click to explore our transparent pricing for hearses, decor, and more.</p>
               </div>
             </div>
             <div className={`p-2 rounded-full bg-slate-100 text-slate-400 transition-transform duration-300 ${isPriceListOpen ? 'rotate-180' : ''}`}>

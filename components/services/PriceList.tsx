@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCar, FaHorse, FaUsers, FaAsterisk, FaCamera, FaLeaf } from 'react-icons/fa';
+import { FaCar, FaHorse, FaUsers, FaAsterisk, FaCamera, FaLeaf, FaPhone } from 'react-icons/fa';
 
 interface PriceItem {
   name: string;
@@ -82,7 +82,7 @@ const PRICE_DATA: PriceCategory[] = [
 export default function PriceList() {
   return (
     <section className="py-8 pb-15 bg-slate-50 min-h-screen">
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-2 md:px-4 max-w-5xl">
         
         {/* Pricing Grid */}
         <div className="space-y-8">
@@ -92,15 +92,15 @@ export default function PriceList() {
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden"
+              className="bg-white rounded-lg md:rounded-3xl shadow-sm border border-slate-200 overflow-hidden"
             >
               {/* Category Header */}
-              <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
+              <div className="p-4 md:p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl">
                   {section.icon}
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">
+                  <h3 className="md:text-xl font-bold text-slate-800 uppercase tracking-tight">
                     {section.category}
                   </h3>
                   {section.description && (
@@ -117,14 +117,14 @@ export default function PriceList() {
                   <table className="w-full text-left">
                     <thead>
                       <tr className="text-[10px] uppercase tracking-widest text-slate-400 border-b border-slate-50">
-                        <th className="px-4 py-3 font-bold">Service Item</th>
-                        <th className="px-4 py-3 font-bold text-right">Price</th>
+                        <th className="px-2 md:px-4 py-3 font-bold">Service Item</th>
+                        <th className="px-2 md:px-4 py-3 font-bold text-right">Price</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
                       {section.items.map((item, itemIdx) => (
                         <tr key={itemIdx} className="group hover:bg-slate-50/50 transition-colors">
-                          <td className="px-4 py-4">
+                          <td className="px-2 md:px-4 py-4">
                             <p className="text-sm md:text-base font-semibold text-slate-700 group-hover:text-amber-700 transition-colors">
                               {item.name}
                             </p>
@@ -132,7 +132,7 @@ export default function PriceList() {
                               <p className="text-xs text-slate-400 mt-1">{item.note}</p>
                             )}
                           </td>
-                          <td className="px-4 py-4 text-right">
+                          <td className="px-2 md:px-4 py-4 text-right">
                             <span className="text-sm md:text-base font-black text-slate-900 bg-amber-50 px-3 py-1 rounded-lg">
                               {item.price}
                             </span>
@@ -148,17 +148,24 @@ export default function PriceList() {
         </div>
 
         {/* Footer Note */}
-        <div className="mt-12 p-8 bg-amber-600 rounded-3xl text-white text-center shadow-xl shadow-amber-900/10">
+        <div className="mt-12 p-6 md:p-8 bg-amber-600 rounded-lg md:rounded-3xl text-white text-center shadow-xl shadow-amber-900/10">
           <p className="text-sm font-bold uppercase tracking-[0.3em] mb-2">Important Notice</p>
-          <p className="text-lg font-medium italic">
+          <p className="md:text-lg font-medium italic">
             *** PLEASE NOTE THAT THIS QUOTE COVERS FOR ONE (1) DAY ***
           </p>
-          <button 
-            onClick={() => window.dispatchEvent(new Event("open-chat"))}
-            className="mt-6 bg-white text-amber-700 px-8 py-3 rounded-full font-bold hover:bg-slate-100 transition-colors"
-          >
-            Inquire for Custom Dates
-          </button>
+          <div className='mx-auto max-w-xl flex flex-col md:flex-row justify-center items-center md:gap-6'>
+            <button 
+              onClick={() => window.dispatchEvent(new Event("open-chat"))}
+              className="w-full mt-6 md:mt-3 bg-white text-amber-700 px-8 py-3 rounded-xl md:rounded-full font-bold hover:bg-slate-100 transition-colors"
+            >
+              Inquire for Custom Dates
+            </button>
+            
+            <button className='w-full mx-auto flex justify-center gap-2 items-center mt-3 bg-white text-amber-700 px-8 py-3 rounded-xl md:rounded-full font-bold hover:bg-slate-100 transition-colors'>
+              <a href="tel:">Call Us Today....</a>
+              <FaPhone className="text-amber-500" />
+            </button>
+          </div>
         </div>
       </div>
     </section>
