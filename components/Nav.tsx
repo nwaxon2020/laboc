@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, Suspense } from 'react';
-// Added React Icons for the update
+import { useState, Suspense, useEffect } from 'react';
+import { db } from "@/lib/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 import { FaHome, FaServicestack, FaStore, FaCalendarAlt, FaInfoCircle, FaPhoneAlt, FaFileInvoiceDollar } from 'react-icons/fa';
 
 function NavContent() {
@@ -14,8 +15,35 @@ function NavContent() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isQuotationOpen, setIsQuotationOpen] = useState(false);
   const [isBlogOpen, setIsBlogOpen] = useState(false);
-  
-  const shouldBeWhite = pathname === '/blog' || pathname === '/events'|| pathname === '/about';
+
+  // ✅ DYNAMIC DATA STATES
+  const [serviceSubItems, setServiceSubItems] = useState<string[]>([]);
+  const [quotationItems, setQuotationItems] = useState<string[]>([]);
+  const [emergencyPhone, setEmergencyPhone] = useState("07065870898");
+
+  useEffect(() => {
+    const fetchNavData = async () => {
+      try {
+        const serviceSnap = await getDoc(doc(db, "settings", "servicePage"));
+        if (serviceSnap.exists()) {
+          const data = serviceSnap.data();
+          // Pull titles from the services cards
+          setServiceSubItems(data.services?.map((s: any) => s.title) || []);
+          // Pull categories from the pricing sections
+          setQuotationItems(data.pricing?.map((p: any) => p.category) || []);
+        }
+        const dashSnap = await getDoc(doc(db, "settings", "dashboard"));
+        if (dashSnap.exists()) {
+          setEmergencyPhone(dashSnap.data().mobile || "07065870898");
+        }
+      } catch (err) {
+        console.error("Nav data fetch error:", err);
+      }
+    };
+    fetchNavData();
+  }, []);
+
+  const shouldBeWhite = pathname === '/blog' || pathname === '/events' || pathname === '/about';
   const textColor = shouldBeWhite ? 'text-white' : 'text-gray-700';
   const activeTextColor = shouldBeWhite ? 'text-white' : 'text-gray-900';
   const activeBorder = shouldBeWhite ? 'border-white' : 'border-gray-800';
@@ -45,29 +73,9 @@ function NavContent() {
     }
   };
 
-  const serviceSubItems = [
-    'Traditional Funerals',
-    'Cremation Services',
-    'Pre-Planning',
-    'Grief Support',
-    'Transportation',
-    'Memorial Products',
-    'Diplomatic Convoy',
-    'Floral & Venue Decor'
-  ];
-
-  const quotationItems = [
-    'Hearse Services',
-    'Horse Carriage',
-    'Pall Bearers & Band',
-    'Lying-In-State Decoration',
-    'Wreaths',
-    'Photography & Media'
-  ];
-
-  const blogSubItems =[
-    {name: "Market Place", href: "/blog"},
-    {name: "Events", href: "/events"},
+  const blogSubItems = [
+    { name: "Market Place", href: "/blog" },
+    { name: "Events", href: "/events" },
   ];
 
   const aboutSubItems = [
@@ -80,12 +88,8 @@ function NavContent() {
 
   return (
     <>
-      {/* DESKTOP NAVIGATION */}
       <nav className="hidden md:flex items-center space-x-8">
-        <Link
-          href="/"
-          className={`${pathname === '/' ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80 font-medium`} transition duration-300 py-2`}
-        >
+        <Link href="/" className={`${pathname === '/' ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80 font-medium`} transition duration-300 py-2`}>
           <FaHome size={24} />
         </Link>
 
@@ -117,11 +121,7 @@ function NavContent() {
                 </button>
                 <div className="absolute left-full top-0 w-56 bg-white shadow-xl rounded-lg border border-gray-100 py-2 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all">
                     {quotationItems.map(q => (
-                        <button 
-                          key={q} 
-                          onClick={() => handlePriceCategoryClick(q)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium"
-                        >
+                        <button key={q} onClick={() => handlePriceCategoryClick(q)} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium">
                           {q}
                         </button>
                     ))}
@@ -129,12 +129,7 @@ function NavContent() {
             </div>
 
             {serviceSubItems.map((service) => (
-              <Link
-                key={service}
-                href={`/services?service=${encodeURIComponent(service)}`}
-                onClick={(e) => handleServiceLinkClick(e, service)}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium"
-              >
+              <Link key={service} href={`/services?service=${encodeURIComponent(service)}`} onClick={(e) => handleServiceLinkClick(e, service)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium">
                 {service}
               </Link>
             ))}
@@ -189,7 +184,6 @@ function NavContent() {
               <FaHome className="text-gray-400" /> Home
             </Link>
             
-            {/* MOBILE SERVICES */}
             <div className="flex flex-col">
               <button onClick={() => setIsServicesOpen(!isServicesOpen)} className={`flex justify-between items-center text-lg font-medium py-2 border-b border-gray-50 ${isServicesActive ? 'text-gray-900 font-bold underline' : 'text-gray-700'}`}>
                 <span className="flex items-center gap-3"><FaServicestack className="text-gray-400" /> Services</span>
@@ -199,7 +193,6 @@ function NavContent() {
                 <div className="flex flex-col space-y-3 pl-4 mt-3 border-l-2 border-blue-100 text-gray-700">
                   <Link href="/services" onClick={() => setIsMenuOpen(false)} className="text-blue-600 font-bold text-sm">View All Services</Link>
                   
-                  {/* MOBILE QUOTATIONS NESTED */}
                   <button onClick={() => setIsQuotationOpen(!isQuotationOpen)} className="flex justify-between items-center text-amber-600 font-bold text-sm">
                       <span className="flex items-center gap-2"><FaFileInvoiceDollar /> Services Quotations</span>
                       <svg className={`w-4 h-4 transition-transform ${isQuotationOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
@@ -207,11 +200,7 @@ function NavContent() {
                   {isQuotationOpen && (
                     <div className="flex flex-col space-y-2 pl-3 border-l border-amber-200">
                         {quotationItems.map(q => (
-                            <button 
-                              key={q} 
-                              onClick={() => handlePriceCategoryClick(q)}
-                              className="text-left text-gray-500 text-xs py-1 hover:text-amber-700"
-                            >
+                            <button key={q} onClick={() => handlePriceCategoryClick(q)} className="text-left text-gray-500 text-xs py-1 hover:text-amber-700">
                               {q}
                             </button>
                         ))}
@@ -237,7 +226,7 @@ function NavContent() {
             <button onClick={openChat} className="text-left text-gray-700 py-2 text-lg font-medium border-b border-gray-50 pb-2 flex items-center gap-3">
               <FaPhoneAlt className="text-gray-400" /> Contact
             </button>
-            <a href="tel:07065870898" className="bg-slate-900 text-white px-4 py-3 rounded-xl text-center font-bold shadow-lg">24/7 Emergency Line</a>
+            <a href={`tel:${emergencyPhone}`} className="bg-slate-900 text-white px-4 py-3 rounded-xl text-center font-bold shadow-lg">24/7 Emergency Line</a>
           </div>
         </div>
       )}
