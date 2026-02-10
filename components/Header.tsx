@@ -182,7 +182,7 @@ export default function Header() {
                                             <div className="flex flex-col gap-1">
                                                 {isAdmin && (
                                                     <Link 
-                                                        href="/admin/dashboard" 
+                                                        href="/admin" 
                                                         onClick={() => setIsDropdownOpen(false)}
                                                         className="flex items-center gap-2 text-xs p-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition font-bold mb-1 shadow-sm"
                                                     >

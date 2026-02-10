@@ -58,6 +58,7 @@ export default function Footer() {
     try {
       await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
       toast.success("Admin access granted");
+      router.push("/admin")
       setIsAdminModalOpen(false);
     } catch (error) {
       toast.error("Invalid Admin Credentials");
@@ -135,7 +136,7 @@ export default function Footer() {
 
               {user?.uid === adminUID && (
                 <li>
-                  <Link href="/admin/dashboard" className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-2 mt-2">
+                  <Link href="/admin" className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-2 mt-2">
                     <FaUserShield size={14} /> Admin Dashboard
                   </Link>
                 </li>
