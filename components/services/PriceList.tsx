@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaCar, FaHorse, FaUsers, FaAsterisk, FaCamera, FaLeaf, FaPhone } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 interface PriceItem {
   name: string;
@@ -80,6 +81,37 @@ const PRICE_DATA: PriceCategory[] = [
 ];
 
 export default function PriceList() {
+  const router = useRouter();
+
+  // Function to clear URL parameters
+  const clearUrlParams = () => {
+    router.replace('/services', { scroll: false });
+  };
+
+  // Function to scroll to specific category
+  const scrollToCategory = (categoryName: string) => {
+    // Find the category element
+    const categoryElement = document.getElementById(`category-${categoryName.toLowerCase().replace(/\s+/g, '-')}`);
+    if (categoryElement) {
+      categoryElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    // Check if there's a URL parameter for price list category
+    const urlParams = new URLSearchParams(window.location.search);
+    const priceCategory = urlParams.get('price-category');
+    
+    if (priceCategory) {
+      // Small delay to ensure component is mounted
+      setTimeout(() => {
+        scrollToCategory(priceCategory);
+        // Clear the price-category param after scrolling
+        clearUrlParams();
+      }, 300);
+    }
+  }, []);
+
   return (
     <section className="py-8 pb-15 bg-slate-50 min-h-screen">
       <div className="container mx-auto px-2 md:px-4 max-w-5xl">
@@ -89,6 +121,7 @@ export default function PriceList() {
           {PRICE_DATA.map((section, idx) => (
             <motion.div 
               key={idx}
+              id={`category-${section.category.toLowerCase().replace(/\s+/g, '-')}`}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}

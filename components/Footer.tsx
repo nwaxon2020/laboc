@@ -26,7 +26,7 @@ export default function Footer() {
 
   const adminUID = process.env.NEXT_PUBLIC_ADMIN_KEY;
   const COMPANY_ADDRESS = "12 Surulere Street, Beside Old Fanmilk Depot, Makun, Sagamu, Ogun State, Nigeria";
-  const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(COMPANY_ADDRESS)}`;
+  const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=$${encodeURIComponent(COMPANY_ADDRESS)}`;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -36,9 +36,11 @@ export default function Footer() {
   }, []);
 
   const handleServiceClick = (serviceTitle: string) => {
-    // FIXED: Using router.push instead of window.location.href to prevent flickering/freezing
-    // This performs a client-side navigation which is much faster and more stable
-    router.push(`/services?service=${encodeURIComponent(serviceTitle)}`);
+    // UPDATED: Create a safe ID from the title (e.g., "Traditional Funerals" -> "traditional-funerals")
+    const sectionId = serviceTitle.toLowerCase().replace(/\s+/g, '-');
+    
+    // This pushes to the services page and appends the hash for the browser to scroll to
+    router.push(`/services?service=${encodeURIComponent(serviceTitle)}#${sectionId}`);
   };
 
   const handleGoogleLogin = async () => {
@@ -103,7 +105,7 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4 text-blue-500 uppercase tracking-widest text-xs">Navigation</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li><Link href="/" className="hover:text-white transition font-medium">Home</Link></li>
-              <li><Link href="/services" className="hover:text-white transition font-medium">Services</Link></li>
+              <li><Link href="/services#services" className="hover:text-white transition font-medium">Services</Link></li>
               <li><Link href="/blog" className="hover:text-white transition font-medium">Market Place</Link></li>
               <li><Link href="/events" className="hover:text-white transition font-medium">Events</Link></li>
               

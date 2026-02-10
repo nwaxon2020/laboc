@@ -30,7 +30,7 @@ export default function ContactSection({ isOpen, onClose }: ContactSectionProps)
     try {
       await addDoc(collection(db, "contacts"), {
         ...formData,
-        status: "unread", // 👈 FIXED: Added unread status for the bubble to work
+        status: "unread",
         createdAt: serverTimestamp(),
       });
       
@@ -51,20 +51,36 @@ export default function ContactSection({ isOpen, onClose }: ContactSectionProps)
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center md:p-4 md:mt-18">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" />
-          <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-4xl bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col lg:flex-row">
-            <button onClick={onClose} className="absolute top-5 right-5 z-20 p-2 text-slate-400 hover:text-white transition-colors"><FaTimes size={24} /></button>
-            <div className="lg:w-1/3 bg-blue-600 p-6 md:p-8 text-white">
-              <h3 className="text-3xl font-serif font-bold mb-8">Contact Information</h3>
+          
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+            animate={{ opacity: 1, scale: 1, y: 0 }} 
+            exit={{ opacity: 0, scale: 0.9, y: 20 }} 
+            className="relative w-full h-[100vh] md:h-auto max-w-4xl bg-slate-900/90 border border-slate-800 md:rounded-2xl overflow-y-auto md:overflow-hidden shadow-2xl flex flex-col-reverse lg:flex-row"
+          >
+            {/* ✅ FIXED: Close Button at the very top with better visibility */}
+            <div className="absolute top-[-395px] md:top-0 left-0 right-0 h-14 flex justify-end items-center px-4 pointer-events-none z-[110]">
+              <button 
+                onClick={onClose} 
+                className="pointer-events-auto p-2 bg-slate-800/80 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg border border-slate-700"
+              >
+                <FaTimes size={18} />
+              </button>
+            </div>
+
+            {/* INFO SECTION (Bottom on mobile) */}
+            <div className="lg:w-1/3 bg-blue-600 p-8 py-12 md:p-10 text-white">
+              <h3 className="text-2xl md:text-3xl font-serif font-bold mb-8">Contact Info</h3>
               <div className="space-y-8">
                 <div className="flex items-start gap-4">
                   <FaMapMarkerAlt className="mt-1 text-blue-200" />
-                  <div><h4 className="font-bold">Location</h4><p className="text-blue-100 text-sm">123 Compassion Street, Sagamu</p></div>
+                  <div><h4 className="font-bold">Location</h4><p className="text-blue-100 text-sm">12 Surulere Street, Sagamu</p></div>
                 </div>
                 <div className="flex items-start gap-4">
                   <FaPhoneAlt className="mt-1 text-blue-200" />
-                  <div><h4 className="font-bold">Phone</h4><p className="text-blue-100 text-sm">Main: (070) 658-70898</p></div>
+                  <div><h4 className="font-bold">Phone</h4><p className="text-blue-100 text-sm">(070) 658-70898</p></div>
                 </div>
                 <div className="flex items-start gap-4">
                   <FaEnvelope className="mt-1 text-blue-200" />
@@ -76,27 +92,31 @@ export default function ContactSection({ isOpen, onClose }: ContactSectionProps)
                 </div>
               </div>
             </div>
-            <div className="lg:w-2/3 p-8 md:p-12 bg-slate-900">
-              <h3 className="text-2xl font-serif font-bold text-white mb-6 text-center">Send Us a Message</h3>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <input type="text" name="name" placeholder="Full Name *" required value={formData.name} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" />
-                  <input type="email" name="email" placeholder="Email Address *" required value={formData.email} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <input type="tel" name="phone" placeholder="Phone Number *" required value={formData.phone} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" />
-                  <select name="service" value={formData.service} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    <option value="" className="bg-slate-900">Select Service</option>
-                    <option value="traditional" className="bg-slate-900">Traditional Funeral</option>
-                    <option value="cremation" className="bg-slate-900">Cremation</option>
-                    <option value="pre-planning" className="bg-slate-900">Pre-Planning</option>
-                  </select>
-                </div>
-                <textarea name="message" placeholder="How can we help you? *" rows={4} required value={formData.message} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" />
-                <button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold transition-all shadow-lg disabled:opacity-50">
-                  {isSubmitting ? "Processing..." : "Submit Consultation Request"}
-                </button>
-              </form>
+
+            {/* FORM SECTION (Top on mobile) */}
+            <div className="lg:w-2/3 p-6 md:p-12 bg-slate-900 py-28 md:py-8">
+              <div className="max-w-md mx-auto">
+                <h3 className="text-2xl font-serif font-bold text-white mb-8 text-center">Consultation Request</h3>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="text" name="name" placeholder="Full Name *" required value={formData.name} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                    <input type="email" name="email" placeholder="Email Address *" required value={formData.email} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="tel" name="phone" placeholder="Phone Number *" required value={formData.phone} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                    <select name="service" value={formData.service} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                      <option value="" className="bg-slate-900">Select Service</option>
+                      <option value="traditional" className="bg-slate-900">Traditional Funeral</option>
+                      <option value="cremation" className="bg-slate-900">Cremation</option>
+                      <option value="pre-planning" className="bg-slate-900">Pre-Planning</option>
+                    </select>
+                  </div>
+                  <textarea name="message" placeholder="How can we help you? *" rows={4} required value={formData.message} onChange={handleChange} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  <button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-xl shadow-blue-900/20 disabled:opacity-50 active:scale-95">
+                    {isSubmitting ? "Processing..." : "Send Request"}
+                  </button>
+                </form>
+              </div>
             </div>
           </motion.div>
         </div>

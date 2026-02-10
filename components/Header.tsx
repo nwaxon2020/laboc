@@ -21,9 +21,7 @@ export default function Header() {
     const ceoImage = null; 
     const placeholderImage = "https://ui-avatars.com/api/?name=Admin&background=111827&color=fff";
 
-    // UPDATED: Background & Text Color Logic based on URL
     const getHeaderStyles = () => {
-        
         if (pathname === '/blog') {
             return {
                 container: 'bg-gray-950 text-white border-b border-gray-800',
@@ -42,7 +40,7 @@ export default function Header() {
         }
         if (pathname === '/about') {
             return {
-                container: 'bg-blue-900 text-white shadow-xl', // Dark Blue (Slate-900)
+                container: 'bg-blue-900 text-white shadow-xl', 
                 text: 'text-white',
                 subText: 'text-slate-300',
                 line: 'bg-slate-700'
@@ -97,6 +95,11 @@ export default function Header() {
 
     const isAdmin = user?.uid === adminUID;
 
+    // ✅ FIXED: The guard check is now AFTER all hooks
+    if (pathname?.startsWith('/admin')) {
+        return null;
+    }
+
     return (
         <header className={`sticky top-0 z-[300] transition-all duration-500 ${styles.container}`}>
             <div className="container mx-auto p-3">
@@ -120,7 +123,6 @@ export default function Header() {
                         </div>
                     </Link>
 
-                    {/* Navigation Component - Ensure Nav.tsx uses inherit colors or props */}
                     <Nav />
 
                     {/* Actions Area */}
@@ -180,7 +182,7 @@ export default function Header() {
                                             <div className="flex flex-col gap-1">
                                                 {isAdmin && (
                                                     <Link 
-                                                        href="/admin" 
+                                                        href="/admin/dashboard" 
                                                         onClick={() => setIsDropdownOpen(false)}
                                                         className="flex items-center gap-2 text-xs p-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition font-bold mb-1 shadow-sm"
                                                     >

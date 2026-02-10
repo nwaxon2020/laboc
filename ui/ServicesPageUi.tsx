@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, Suspense, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, Suspense, useMemo, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import PriceList from '@/components/services/PriceList';
-import { motion, AnimatePresence } from 'framer-motion'; // Added for toggle animation
-import { FaChevronDown, FaTag } from 'react-icons/fa'; // Added for UI icons
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaChevronDown, FaTag } from 'react-icons/fa';
 
 interface Service {
   title: string;
@@ -16,8 +16,9 @@ interface Service {
 
 function ServicesContent() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [isPriceListOpen, setIsPriceListOpen] = useState(true); // Toggle state
+  const [isPriceListOpen, setIsPriceListOpen] = useState(true);
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const services: Service[] = useMemo(() => [
     {
@@ -30,7 +31,7 @@ function ServicesContent() {
     {
       title: 'Cremation Services',
       description: 'Respectful cremation options with memorial services and urn selection assistance.',
-      longDescription: 'We offer dignified cremation paths ranging from direct cremation to full memorial services. Our staff assists with choosing high-quality urns and planning ceremonies that celebrate life in a personalized way that fits your family’s needs.',
+      longDescription: 'We offer dignified cremation paths ranging from direct cremation to full memorial services. Our staff assists with choosing high-quality urns and planning ceremonies that celebrate life in a personalized way that fits your family\'s needs.',
       image: 'https://lirp.cdn-website.com/bbae4094/dms3rep/multi/opt/cremation+services+in+Whiteland-+IN-7f98cf09-640w.jpg',
       icon: '⚱️'
     },
@@ -78,6 +79,30 @@ function ServicesContent() {
     },
   ], []);
 
+  // Function to clear URL parameters
+  const clearUrlParams = useCallback(() => {
+    router.replace('/services', { scroll: false });
+  }, [router]);
+
+  // Function to handle service details close
+  const handleCloseServiceDetails = useCallback(() => {
+    setSelectedService(null);
+    clearUrlParams();
+  }, [clearUrlParams]);
+
+  // Function to handle service selection
+  const handleSelectService = useCallback((service: Service) => {
+    setSelectedService(service);
+    // Set URL param for the service
+    router.replace(`/services?service=${encodeURIComponent(service.title)}`, { scroll: false });
+    
+    const section = document.getElementById("services");
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [router]);
+
+  // Check for service parameter on load
   useEffect(() => {
     const serviceFromUrl = searchParams.get('service');
     if (serviceFromUrl) {
@@ -90,7 +115,20 @@ function ServicesContent() {
         }
       }
     }
-  }, [searchParams, services]);
+
+    // Check for price category parameter
+    const priceCategory = searchParams.get('price-category');
+    if (priceCategory) {
+      // Open price list if it's closed
+      setIsPriceListOpen(true);
+      
+      // Small delay to ensure PriceList component is rendered
+      setTimeout(() => {
+        // PriceList component will handle the scrolling
+        clearUrlParams();
+      }, 500);
+    }
+  }, [searchParams, services, clearUrlParams]);
 
   const handleWhatsApp = () => {
     window.open('https://wa.me/2347065870898?text=Hello, I would like to inquire about your services.', '_blank');
@@ -136,7 +174,7 @@ function ServicesContent() {
             </div>
             <div className="p-6 md:p-8 w-full md:w-2/3 relative">
               <button 
-                onClick={() => setSelectedService(null)}
+                onClick={handleCloseServiceDetails}
                 className="absolute -top-6 right-2 md:top-4 md:right-4 p-2 text-slate-400 hover:text-red-500 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -206,10 +244,7 @@ function ServicesContent() {
           {services.map((service, index) => (
             <div 
               key={index}
-              onClick={() => {
-                setSelectedService(service);
-                document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onClick={() => handleSelectService(service)}
               className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100 flex flex-col"
             >
               <div className="relative h-48 overflow-hidden">

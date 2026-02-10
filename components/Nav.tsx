@@ -1,17 +1,19 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useState, useEffect, Suspense } from 'react'
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+// Added React Icons for the update
+import { FaHome, FaServicestack, FaStore, FaCalendarAlt, FaInfoCircle, FaPhoneAlt, FaFileInvoiceDollar } from 'react-icons/fa';
 
 function NavContent() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isAboutOpen, setIsAboutOpen] = useState(false)
-  const [isServicesOpen, setIsServicesOpen] = useState(false)
-  const [isQuotationOpen, setIsQuotationOpen] = useState(false) // Toggle for quotations
-  const [isBlogOpen, setIsBlogOpen] = useState(false)
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isQuotationOpen, setIsQuotationOpen] = useState(false);
+  const [isBlogOpen, setIsBlogOpen] = useState(false);
   
   const shouldBeWhite = pathname === '/blog' || pathname === '/events'|| pathname === '/about';
   const textColor = shouldBeWhite ? 'text-white' : 'text-gray-700';
@@ -33,6 +35,16 @@ function NavContent() {
     router.push(`/services?service=${encodeURIComponent(title)}`);
   };
 
+  const handlePriceCategoryClick = (category: string) => {
+    setIsMenuOpen(false);
+    setIsServicesOpen(false);
+    setIsQuotationOpen(false);
+    router.push(`/services?price-category=${encodeURIComponent(category)}`);
+    if (pathname === '/services') {
+      window.location.href = `/services?price-category=${encodeURIComponent(category)}`;
+    }
+  };
+
   const serviceSubItems = [
     'Traditional Funerals',
     'Cremation Services',
@@ -42,7 +54,7 @@ function NavContent() {
     'Memorial Products',
     'Diplomatic Convoy',
     'Floral & Venue Decor'
-  ]
+  ];
 
   const quotationItems = [
     'Hearse Services',
@@ -51,18 +63,18 @@ function NavContent() {
     'Lying-In-State Decoration',
     'Wreaths',
     'Photography & Media'
-  ]
+  ];
 
   const blogSubItems =[
     {name: "Market Place", href: "/blog"},
     {name: "Events", href: "/events"},
-  ]
+  ];
 
   const aboutSubItems = [
     { name: 'About Us', href: '/about' },
     { name: 'Our Location', href: GOOGLE_MAPS_URL, isExternal: true },
     { name: 'Our Policy', href: '/terms' },
-  ]
+  ];
 
   const isServicesActive = pathname === '/services';
 
@@ -72,9 +84,9 @@ function NavContent() {
       <nav className="hidden md:flex items-center space-x-8">
         <Link
           href="/"
-          className={`${pathname === '/' ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80 font-medium`} transition duration-300`}
+          className={`${pathname === '/' ? `${activeTextColor} font-bold border-b-2 ${activeBorder}` : `${textColor} hover:opacity-80 font-medium`} transition duration-300 py-2`}
         >
-          Home
+          <FaHome size={24} />
         </Link>
 
         {/* SERVICES DROPDOWN */}
@@ -98,15 +110,20 @@ function NavContent() {
               View All Services
             </Link>
 
-            {/* NESTED QUOTATION LINK */}
             <div className="relative group/sub">
-                <button className="flex gap-4 justify-start items-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium">
+                <button className="flex gap-4 justify-start items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium text-left">
                     Services Quotations
                     <svg className="w-3 h-3 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 <div className="absolute left-full top-0 w-56 bg-white shadow-xl rounded-lg border border-gray-100 py-2 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all">
                     {quotationItems.map(q => (
-                        <Link key={q} href="/services#price-list" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium">{q}</Link>
+                        <button 
+                          key={q} 
+                          onClick={() => handlePriceCategoryClick(q)}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-amber-700 font-medium"
+                        >
+                          {q}
+                        </button>
                     ))}
                 </div>
             </div>
@@ -168,12 +185,14 @@ function NavContent() {
       {isMenuOpen && (
         <div className="absolute top-full left-0 right-0 bg-white shadow-lg md:hidden z-50 h-screen overflow-y-auto pb-24">
           <div className="container mx-auto px-6 py-6 flex flex-col space-y-4">
-            <Link href="/" className={`${pathname === '/' ? 'text-gray-900 font-bold underline' : 'text-gray-700 font-medium'} text-lg border-b border-gray-50 pb-2`} onClick={() => setIsMenuOpen(false)}>Home</Link>
+            <Link href="/" className={`${pathname === '/' ? 'text-gray-900 font-bold underline' : 'text-gray-700 font-medium'} text-lg border-b border-gray-50 pb-2 flex items-center gap-3`} onClick={() => setIsMenuOpen(false)}>
+              <FaHome className="text-gray-400" /> Home
+            </Link>
             
             {/* MOBILE SERVICES */}
             <div className="flex flex-col">
               <button onClick={() => setIsServicesOpen(!isServicesOpen)} className={`flex justify-between items-center text-lg font-medium py-2 border-b border-gray-50 ${isServicesActive ? 'text-gray-900 font-bold underline' : 'text-gray-700'}`}>
-                Services
+                <span className="flex items-center gap-3"><FaServicestack className="text-gray-400" /> Services</span>
                 <svg className={`w-5 h-5 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </button>
               {isServicesOpen && (
@@ -182,15 +201,21 @@ function NavContent() {
                   
                   {/* MOBILE QUOTATIONS NESTED */}
                   <button onClick={() => setIsQuotationOpen(!isQuotationOpen)} className="flex justify-between items-center text-amber-600 font-bold text-sm">
-                      Services Quotations
+                      <span className="flex items-center gap-2"><FaFileInvoiceDollar /> Services Quotations</span>
                       <svg className={`w-4 h-4 transition-transform ${isQuotationOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                   </button>
                   {isQuotationOpen && (
-                      <div className="flex flex-col space-y-2 pl-3 border-l border-amber-200">
-                          {quotationItems.map(q => (
-                              <Link key={q} href="/services#price-list" onClick={() => setIsMenuOpen(false)} className="text-gray-500 text-xs py-1">{q}</Link>
-                          ))}
-                      </div>
+                    <div className="flex flex-col space-y-2 pl-3 border-l border-amber-200">
+                        {quotationItems.map(q => (
+                            <button 
+                              key={q} 
+                              onClick={() => handlePriceCategoryClick(q)}
+                              className="text-left text-gray-500 text-xs py-1 hover:text-amber-700"
+                            >
+                              {q}
+                            </button>
+                        ))}
+                    </div>
                   )}
 
                   {serviceSubItems.map((service) => (
@@ -200,15 +225,24 @@ function NavContent() {
               )}
             </div>
 
-            <Link href="/blog" className="text-gray-700 font-medium text-lg border-b border-gray-50 pb-2" onClick={() => setIsMenuOpen(false)}>Market Place</Link>
-            <Link href="/events" className="text-gray-700 font-medium text-lg border-b border-gray-50 pb-2" onClick={() => setIsMenuOpen(false)}>Events</Link>
-            <button onClick={openChat} className="text-left text-gray-700 py-2 text-lg font-medium border-b border-gray-50 pb-2">Contact</button>
+            <Link href="/blog" className="text-gray-700 font-medium text-lg border-b border-gray-50 pb-2 flex items-center gap-3" onClick={() => setIsMenuOpen(false)}>
+              <FaStore className="text-gray-400" /> Market Place
+            </Link>
+            <Link href="/events" className="text-gray-700 font-medium text-lg border-b border-gray-50 pb-2 flex items-center gap-3" onClick={() => setIsMenuOpen(false)}>
+              <FaCalendarAlt className="text-gray-400" /> Events
+            </Link>
+            <Link href="/about" className="text-gray-700 font-medium text-lg border-b border-gray-50 pb-2 flex items-center gap-3" onClick={() => setIsMenuOpen(false)}>
+              <FaInfoCircle className="text-gray-400" /> About Us
+            </Link>
+            <button onClick={openChat} className="text-left text-gray-700 py-2 text-lg font-medium border-b border-gray-50 pb-2 flex items-center gap-3">
+              <FaPhoneAlt className="text-gray-400" /> Contact
+            </button>
             <a href="tel:07065870898" className="bg-slate-900 text-white px-4 py-3 rounded-xl text-center font-bold shadow-lg">24/7 Emergency Line</a>
           </div>
         </div>
       )}
     </>
-  )
+  );
 }
 
 export default function Navigation() {
@@ -216,5 +250,5 @@ export default function Navigation() {
     <Suspense fallback={<div className="h-15" />}>
       <NavContent />
     </Suspense>
-  )
+  );
 }
