@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Laboc Funeral Services',
     description: 'Providing dignified funeral services with compassion and professionalism.',
-    url: 'https://laboc-funeral-services.vercel.app',
+    url: 'https://laboc-funeral-service.com',
     siteName: 'Laboc Funeral Services',
     images: [
       {
