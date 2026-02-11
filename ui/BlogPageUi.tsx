@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaTimes, FaWhatsapp } from 'react-icons/fa'
+import { FaTimes, FaWhatsapp, FaSearch } from 'react-icons/fa'
 import BlogCard from '@/components/blog/BlogCard'
+import { db } from "@/lib/firebaseConfig"
+import { doc, getDoc } from "firebase/firestore"
 
-// Define the Interface here to match the Card
 interface BlogItem {
   id: number;
   title: string;
@@ -16,119 +17,91 @@ interface BlogItem {
   price?: number;
 }
 
-const BLOG_POSTS: BlogItem[] = [
-  {
-    id: 1,
-    title: "The Diplomatic Procession",
-    description: "Experience the grandeur of our state-of-the-art diplomatic convoy services for elite farewells.",
-    content: "Our diplomatic convoy features professional outriders, luxury hearses, and a coordinated motorcade designed to provide the highest level of respect. We ensure that the final journey is as prestigious as the life lived.",
-    type: 'image',
-    mediaUrl: 'https://heritagebrothers.com.au/wp-content/uploads/2023/01/Da-Vinci-Maple.png',
-    price: 250000,
-  },
-  {
-    id: 2,
-    title: "Handcrafted Mahogany Caskets",
-    description: "Pure wood, velvet interior. Crafted specifically for comfort and long-lasting honor.",
-    content: "Crafted from premium mahogany, these caskets represent the pinnacle of craftsmanship. Each unit features gold-plated handles and premium satin bedding.",
-    type: 'image',
-    mediaUrl: 'https://trustedcaskets.com/cdn/shop/files/whitecrosscasket.jpg?v=1703728523&width=533',
-    price: 1200000,
-  },
-  {
-    id: 3,
-    title: "Our New Office Location",
-    description: "Visit our new state-of-the-art office in Sagamu for all your pre-planning needs.",
-    content: "We have officially moved! Our new space is designed to provide a serene and comfortable environment for families to discuss arrangements with our counselors.",
-    type: 'image',
-    mediaUrl: 'https://westellafunerals.com.au/volumes/images/Coffins/_1500xAUTO_scale_center-center_70_none/Rosewood-Casket-017.webp',
-    price: 1200000,
-  },
-
-  {
-    id: 4,
-    title: "Our New Office Location",
-    description: "Visit our new state-of-the-art office in Sagamu for all your pre-planning needs.",
-    content: "We have officially moved! Our new space is designed to provide a serene and comfortable environment for families to discuss arrangements with our counselors.",
-    type: 'image',
-    mediaUrl: 'https://www.thefuneraloutlet.com/wp-content/uploads/2019/09/ab1286_devotion_black_gold_open.jpg',
-    price: 1690000,
-  },
-  
-  {
-    id: 5,
-    title: "Handcrafted Mahogany Caskets",
-    description: "Pure wood, velvet interior. Crafted specifically for comfort and long-lasting honor.",
-    content: "Crafted from premium mahogany, these caskets represent the pinnacle of craftsmanship. Each unit features gold-plated handles and premium satin bedding.",
-    type: 'image',
-    mediaUrl: 'https://fullcirclefunerals.co.uk/wp-content/uploads/2025/08/Mahogany-square.jpg',
-    price: 1200000,
-  },
-
-  {
-    id: 6,
-    title: "The Diplomatic Procession",
-    description: "Experience the grandeur of our state-of-the-art diplomatic convoy services for elite farewells.",
-    content: "Our diplomatic convoy features professional outriders, luxury hearses, and a coordinated motorcade designed to provide the highest level of respect. We ensure that the final journey is as prestigious as the life lived.",
-    type: 'image',
-    mediaUrl: 'https://casketdepotvancouver.ca/cdn/shop/products/Dominion-casket-Large__1_2048x.png?v=1657567260',
-    price: 98600,
-  },
-  
-  {
-    id: 7,
-    title: "The Diplomatic Procession",
-    description: "Experience the grandeur of our state-of-the-art diplomatic convoy services for elite farewells.",
-    content: "Our diplomatic convoy features professional outriders, luxury hearses, and a coordinated motorcade designed to provide the highest level of respect. We ensure that the final journey is as prestigious as the life lived.",
-    type: 'image',
-    mediaUrl: 'https://image.made-in-china.com/2f0j00bswivkrhAucT/Coffin-Custom-Luxury-Wood-Export-Coffins.webp',
-    price: 400000000,
-  },
-  {
-    id: 8,
-    title: "Handcrafted Mahogany Caskets",
-    description: "Pure wood, velvet interior. Crafted specifically for comfort and long-lasting honor.",
-    content: "Crafted from premium mahogany, these caskets represent the pinnacle of craftsmanship. Each unit features gold-plated handles and premium satin bedding.",
-    type: 'image',
-    mediaUrl: 'https://www.colourfulcoffins.com/images/Adult%20Metal%20American%20Casket%20Designs/med/ac1395_devotion_roses_black.jpg',
-    price: 1200000,
-  },
-  {
-    id: 9,
-    title: "Our New Office Location",
-    description: "Visit our new state-of-the-art office in Sagamu for all your pre-planning needs.",
-    content: "We have officially moved! Our new space is designed to provide a serene and comfortable environment for families to discuss arrangements with our counselors.",
-    type: 'image',
-    mediaUrl: 'https://tonymontefunerals.com.au/wp-content/uploads/2021/08/Calvary-Veneer-0001.jpeg',
-    price: 1350000,
-  },
-]
-
 export default function BlogPageUi() {
   const [selectedPost, setSelectedPost] = useState<BlogItem | null>(null)
   const [fullScreenImage, setFullScreenImage] = useState<string | null>(null)
+  const [pageData, setPageData] = useState<any>(null)
+  const [contactPhone, setContactPhone] = useState("2347065870898")
+  const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      try {
+        const marketSnap = await getDoc(doc(db, "settings", "marketPage"));
+        if (marketSnap.exists()) setPageData(marketSnap.data());
+
+        const dashSnap = await getDoc(doc(db, "settings", "dashboard"));
+        if (dashSnap.exists()) {
+          const rawPhone = dashSnap.data().mobile || "2347065870898";
+          setContactPhone(rawPhone.replace(/\D/g, ''));
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMarketData();
+  }, []);
+
+  // ✅ Real-time Search Logic
+  const filteredProducts = useMemo(() => {
+    const products = pageData?.items || [];
+    if (!searchQuery.trim()) return products;
+    
+    return products.filter((item: BlogItem) => 
+      item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, pageData]);
+
+  // ✅ Reset Search when interacting
+  const handleInteraction = (post: BlogItem | null = null) => {
+    setSearchQuery(""); 
+    if (post) setSelectedPost(post);
+  };
+
+  if (loading) return (
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="text-amber-500 font-black animate-pulse uppercase tracking-widest">Loading Market...</div>
+    </div>
+  );
+
+  const header = pageData?.header || { title: "Laboc Market Place", subtitle: "Updates, Tributes, & Premium Services" };
 
   return (
-    <main className="bg-black min-h-screen py-18 px-4">
+    <main className="bg-black min-h-screen pt-6 pb-18 px-4">
       <div className="container mx-auto max-w-7xl">
-        <header className="mb-16 text-center">
+
+        {/* ✅ SEARCH INPUT */}
+        <div className="max-w-3xl relative mx-auto group mb-6">
+          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-amber-500 transition-colors" />
+          <input 
+            type="text" 
+            placeholder="Search products by name..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-gray-900 border border-gray-800 text-white pl-12 pr-4 py-2 rounded-xl outline-none focus:border-amber-600 transition-all shadow-2xl"
+          />
+        </div>
+
+        <header className="mb-10 text-center">
           <h1 className="text-2xl md:text-4xl font-black text-white my-4 italic uppercase">
-            Laboc <span className="text-amber-600">Market Place</span>
+            {header.title.split(' ')[0]} <span className="text-amber-600">{header.title.split(' ').slice(1).join(' ')}</span>
           </h1>
-          <p className="text-blue-400 font-medium tracking-widest uppercase text-xs">
-            Updates, Tributes, & Premium Services
+          <p className="text-blue-400 font-medium tracking-widest uppercase text-xs mb-8">
+            {header.subtitle}
           </p>
         </header>
 
-        {/* MAPPING BLOG HERE */}
+        {/* MAPPING FILTERED PRODUCTS */}
         <div className="cursor-pointer px-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {BLOG_POSTS.map((post) => (
+          {filteredProducts.map((post: any) => (
             <div key={post.id} className="relative group">
               <BlogCard 
                 item={post} 
-                onViewMore={() => setSelectedPost(post)} 
+                onViewMore={() => handleInteraction(post)} 
               />
-              {/* Quick Expand Button for Images */}
               {post.type === 'image' && (
                 <button 
                   onClick={() => setFullScreenImage(post.mediaUrl)}
@@ -140,18 +113,21 @@ export default function BlogPageUi() {
             </div>
           ))}
         </div>
+
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-20 text-gray-600 italic">No products match "{searchQuery}"</div>
+        )}
       </div>
 
       {/* 1. PRODUCT DETAIL OVERLAY */}
       <AnimatePresence>
         {selectedPost && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
             className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-xl flex items-center justify-center p-2 md:p-4"
           >
-            {/* Increased max-width to 6xl for bigger desktop view */}
             <div className="bg-gray-900 w-full max-w-6xl max-h-[95vh] overflow-y-auto rounded-lg md:rounded-[2.5rem] border border-gray-800 relative flex flex-col md:flex-row shadow-2xl">
               <button 
                 onClick={() => setSelectedPost(null)}
@@ -160,7 +136,6 @@ export default function BlogPageUi() {
                 <FaTimes size={20} />
               </button>
 
-              {/* Media Section - Increased to 60% width on desktop for "Big" feel */}
               <div className="w-full md:w-[60%] h-[350px] md:h-auto bg-black flex items-center justify-center">
                 <img 
                   src={selectedPost.mediaUrl} 
@@ -170,7 +145,6 @@ export default function BlogPageUi() {
                 />
               </div>
 
-              {/* Content Section */}
               <div className="w-full md:w-[40%] p-6 md:p-12 flex flex-col justify-center border-t md:border-t-0 md:border-l border-gray-800">
                 {selectedPost.price && (
                     <span className="text-amber-600 font-black text-2xl mb-2">₦{selectedPost.price.toLocaleString()}</span>
@@ -183,9 +157,10 @@ export default function BlogPageUi() {
                 </p>
 
                 <a
-                  href={`https://wa.me/2347065870898?text=Hello Laboc, I am interested in your *${selectedPost.title}*`}
+                  href={`https://wa.me/${contactPhone}?text=Hello Laboc, I am interested in: *${selectedPost.title}* (₦${selectedPost.price?.toLocaleString()})`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => handleInteraction()}
                   className="bg-green-600 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest text-center flex items-center justify-center gap-4 hover:bg-green-700 transition-all shadow-lg shadow-green-900/20"
                 >
                   <FaWhatsapp size={28} />
@@ -197,7 +172,7 @@ export default function BlogPageUi() {
         )}
       </AnimatePresence>
 
-      {/* 2. FULL IMAGE LIGHTBOX (Triggered by clicking image) */}
+      {/* 2. LIGHTBOX */}
       <AnimatePresence>
         {fullScreenImage && (
           <motion.div
@@ -210,11 +185,7 @@ export default function BlogPageUi() {
             <button className="absolute top-10 right-10 text-white/50 hover:text-white transition-colors">
               <FaTimes size={30} />
             </button>
-            <img 
-              src={fullScreenImage} 
-              className="max-w-full max-h-full object-contain rounded-sm shadow-2xl" 
-              alt="Full screen product"
-            />
+            <img src={fullScreenImage} className="max-w-full max-h-full object-contain rounded-sm shadow-2xl" alt="Full screen" />
           </motion.div>
         )}
       </AnimatePresence>

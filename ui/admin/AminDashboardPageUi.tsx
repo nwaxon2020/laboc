@@ -7,7 +7,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { 
   FaUserShield, FaFileAlt, FaImages, FaTools, 
-  FaSignOutAlt, FaArrowRight, FaCamera, FaLink, FaTimes, FaCheckCircle,
+  FaSignOutAlt, FaArrowRight, FaCamera, FaStoreAlt , FaTimes, FaCheckCircle,
   FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaChevronDown, FaChevronUp, FaBriefcase, FaWhatsapp
 } from 'react-icons/fa'
 import { HiShieldCheck } from 'react-icons/hi'
@@ -114,8 +114,8 @@ export default function AdminDashboardUi() {
     const adminCards = [
         { title: "Home Page Manager", desc: "Edit Home-Page pictures, values and others.", icon: <FaTools size={24} />, url: "/admin/home-editor", color: "bg-blue-600" },
         { title: "Service Page Manager", desc: "Manage Service Page and Prices.", icon: <FaFileAlt size={24} />, url: "/admin/service-editor", color: "bg-emerald-600" },
-        { title: "Gallery & Inventory", desc: "Update casket catalog.", icon: <FaImages size={24} />, url: "/admin/inventory", color: "bg-purple-600" },
-        { title: "Staff & Inquiries", desc: "View customer requests.", icon: <FaUserShield size={24} />, url: "/admin/staff", color: "bg-amber-600" }
+        { title: "Event Page Manager", desc: "Update events catalog.", icon: <FaImages size={24} />, url: "/admin/event-editor", color: "bg-purple-600" },
+        { title: "Market Page Editor", desc: "Show customers Products Available.", icon: <FaStoreAlt  size={24} />, url: "/admin/market-editor", color: "bg-amber-600" }
     ];
 
     return (
@@ -197,7 +197,7 @@ export default function AdminDashboardUi() {
                 <div className="mb-8 bg-white rounded-lg md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all">
                     <button 
                         onClick={() => setIsContactOpen(!isContactOpen)}
-                        className="w-full p-6 flex justify-between items-center bg-gray-50/50 hover:bg-gray-50 transition-colors"
+                        className="w-full p-6 flex justify-between items-center bg-gray-50/50 hover:bg-gray-200 transition-colors"
                     >
                         <div className="flex items-center gap-4 text-gray-800 font-bold uppercase tracking-widest text-xs">
                             <FaPhoneAlt className="text-emerald-600" /> 
@@ -307,6 +307,17 @@ export default function AdminDashboardUi() {
                             </div>
                         </Link>
                     ))}
+                </div>
+
+                {/* ABOUT EDITOR PAGE LINK */}
+                <div className="my-8 bg-white rounded-lg md:rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all">
+                    <Link href={"/admin/about-terms-editor"} className='flex justify-between items-center px-4 py-6 hover:bg-gray-200'>
+                        <div className="flex items-end gap-2 text-gray-800 font-bold uppercase tracking-widest text-xs">
+                            <FaUserShield className="text-lg text-emerald-600" /> 
+                            About & Term/Policy
+                        </div>
+                        <div className="flex items-center gap-2 text-emerald-600 font-black text-[10px] uppercase tracking-[0.2em]">Launch <FaArrowRight /></div>
+                    </Link>
                 </div>
             </main>
         </div>
