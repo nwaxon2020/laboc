@@ -6,9 +6,21 @@ import { useRouter } from 'next/navigation';
 import { auth, db } from "@/lib/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged, User, signOut, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
-import { FaGoogle, FaLock, FaUserShield, FaSignOutAlt, FaTimes, FaChevronDown } from "react-icons/fa";
+import { 
+  FaGoogle, FaLock, FaUserShield, FaSignOutAlt, FaTimes, FaChevronDown,
+  FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, FaTiktok 
+} from "react-icons/fa";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
+
+const SOCIAL_ICONS: any = {
+  facebook: <FaFacebook />,
+  twitter: <FaTwitter />,
+  instagram: <FaInstagram />,
+  linkedin: <FaLinkedin />,
+  youtube: <FaYoutube />,
+  tiktok: <FaTiktok />
+};
 
 export default function Footer() {
   const router = useRouter();
@@ -21,20 +33,31 @@ export default function Footer() {
   // ✅ DYNAMIC DATA
   const [footerServices, setFooterServices] = useState<string[]>([]);
   const [emergencyPhone, setEmergencyPhone] = useState("07065870898");
+  const [adminContact, setAdminContact] = useState<any>(null);
+  const [socialLinks, setSocialLinks] = useState<any[]>([]);
 
   const adminUID = process.env.NEXT_PUBLIC_ADMIN_KEY;
-  const COMPANY_ADDRESS = "12 Surulere Street, Beside Old Fanmilk Depot, Makun, Sagamu, Ogun State, Nigeria";
-  const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=$${encodeURIComponent(COMPANY_ADDRESS)}`;
 
   useEffect(() => {
     const fetchData = async () => {
+      // Fetch Services
       const serviceSnap = await getDoc(doc(db, "settings", "servicePage"));
       if (serviceSnap.exists()) {
         setFooterServices(serviceSnap.data().services?.map((s: any) => s.title) || []);
       }
+
+      // Fetch Dashboard Settings (Address, Email, Mobile)
       const dashSnap = await getDoc(doc(db, "settings", "dashboard"));
       if (dashSnap.exists()) {
-        setEmergencyPhone(dashSnap.data().mobile || "07065870898");
+        const dashData = dashSnap.data();
+        setAdminContact(dashData);
+        setEmergencyPhone(dashData.mobile || "07065870898");
+      }
+
+      // Fetch Social Links from About/Policy Page Editor
+      const aboutSnap = await getDoc(doc(db, "settings", "aboutPolicyPage"));
+      if (aboutSnap.exists()) {
+        setSocialLinks(aboutSnap.data().about?.socialLinks || []);
       }
     };
     fetchData();
@@ -44,6 +67,10 @@ export default function Footer() {
     });
     return () => unsubscribe();
   }, []);
+
+  const COMPANY_ADDRESS = adminContact?.address || "12 Surulere Street, Beside Old Fanmilk Depot, Makun, Sagamu, Ogun State, Nigeria";
+  const SUPPORT_EMAIL = adminContact?.email || "support@labocfuneral.com";
+  const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(COMPANY_ADDRESS)}`;
 
   const handleServiceClick = (serviceTitle: string) => {
     const sectionId = serviceTitle.toLowerCase().replace(/\s+/g, '-');
@@ -102,9 +129,18 @@ export default function Footer() {
                     <span>Since 2011</span>
                 </p>
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-400 text-sm leading-relaxed mb-6">
               Providing compassionate and dignified funeral services for over 15 years in Sagamu and beyond.
             </p>
+            
+            {/* Social Links from Editor */}
+            <div className="flex gap-4">
+              {socialLinks.filter(s => s.enabled).map((social, i) => (
+                <a key={i} href={social.url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-500 transition-colors text-lg">
+                  {SOCIAL_ICONS[social.icon] || social.platform}
+                </a>
+              ))}
+            </div>
           </div>
           
           <div>
@@ -174,11 +210,11 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="border-t border-gray-900 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-xs">
+        <div className="border-t border-gray-900 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-xs text-center md:text-left">
           <p>© {new Date().getFullYear()} Laboc Funeral Services. All rights reserved.</p>
-          <address className="not-italic flex gap-4 max-w-[30rem]">
-            <span>{COMPANY_ADDRESS}</span>
-            <span>support@labocfuneral.com</span>
+          <address className="not-italic flex flex-col md:flex-row gap-2 md:gap-4 max-w-[30rem]">
+            <span className="hover:text-gray-300 transition-colors cursor-default">{COMPANY_ADDRESS}</span>
+            <a href={`mailto:@${SUPPORT_EMAIL}`} className="text-blue-400 font-medium">{SUPPORT_EMAIL}</a>
           </address>
         </div>
       </div>
