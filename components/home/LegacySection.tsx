@@ -43,8 +43,16 @@ export default function LegacySection() {
             <span className="bg-black p-1 rounded text-red-500 font-black">Laboc</span> Funeral Services
           </p>
           
-          <div className="h-[350px] lg:h-auto lg:w-1/2 relative bg-slate-900 overflow-hidden">
-            <video ref={videoRef} muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-60">
+          <div className="flex flex-col justify-center items-center h-[350px] lg:h-auto lg:w-1/2 relative bg-slate-900 overflow-hidden">
+            {/* ✅ Added key to force video reload when URL changes */}
+            <video 
+              key={legacyData?.videoUrl} 
+              ref={videoRef} 
+              muted 
+              loop 
+              playsInline 
+              className="pt-12 px-0.5 absolute inset-0 w-full h-[80%] object-cover opacity-60"
+            >
               <source src={legacyData?.videoUrl || "/video1.mp4"} type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent lg:bg-gradient-to-r lg:from-blue-900/80 lg:via-transparent lg:to-transparent flex items-end p-6 lg:p-12">

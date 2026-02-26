@@ -47,8 +47,8 @@ export default function HomePageEditor() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (type === 'video' && file.size > 15 * 1024 * 1024) {
-      return toast.error("Video is too large (Max 15MB)");
+    if (type === 'video' && file.size > 50 * 1024 * 1024) {
+      return toast.error("Video is too large (Max 50MB)");
     }
 
     const objectUrl = URL.createObjectURL(file);
