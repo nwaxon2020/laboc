@@ -2,6 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
+import Link from "next/link";
 import { db } from "@/lib/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -42,7 +43,8 @@ export default function LegacySection() {
           <p className="absolute z-30 p-4 text-white text-xs md:text-base">
             <span className="bg-black p-1 rounded text-red-500 font-black">Laboc</span> Funeral Services
           </p>
-          
+          <Link href="/events" className="text-xs absolute z-30 left-134 pt-7 text-blue-400 hover:text-blue-300">Check Out Our Events</Link>
+
           <div className="flex flex-col justify-center items-center h-[350px] lg:h-auto lg:w-1/2 relative bg-slate-900 overflow-hidden">
             {/* ✅ Added key to force video reload when URL changes */}
             <video 
